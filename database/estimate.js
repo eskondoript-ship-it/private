@@ -77,10 +77,11 @@ if (!tiers.includes(TIER)) {
 /* ----------------------------------------------------------------------------
    Band mode: a range rather than a cumulative tier.
 
-   "1 to 10k" is not a row in the ladder — the ladder is cumulative, so the
-   band is the 1+ row minus the 10k+ row. Differencing the FILTERED figures,
-   not the raw ones, because the pass rate is not constant across the range:
-   the bottom of the band is where almost all the spam is.
+   "1 to 10k" is not a row in the ladder — the ladder is cumulative. The band
+   is built by summing the slices between adjacent tiers, applying each slice's
+   own pass and activity rates, because neither rate is constant across the
+   range: the bottom is where almost all the spam is, and also where almost
+   everything is abandoned.
    ---------------------------------------------------------------------------- */
 const FROM = val('--from', '');
 const TO = val('--to', '');
@@ -93,23 +94,50 @@ if (FROM || TO) {
   }
   const adj = t => (E.pass_rate_by_tier && E.pass_rate_by_tier[t] != null) ? E.pass_rate_by_tier[t] : 1;
   const at = (t, k, bound) => E.platforms[k].tiers[t][bound];
-  const passAt = (t, k, bound) => at(t, k, bound) * E.pass_rates[k][bound] * adj(t);
-  /* Activity is per tier AND per platform, so it has to be applied inside the
-     subtraction like everything else. Applying one average rate to the band
-     total would overstate the top and understate the bottom at the same time. */
-  const activeAt = (t, k, bound) => passAt(t, k, bound) * act(t, k);
+
+  /* ------------------------------------------------------------------------
+     Sum the sub-bands. Do NOT difference two cumulative rows.
+
+     The first version computed the band as active(1+) minus active(10k+),
+     which is wrong the moment each row is scaled by a different rate: the 1+
+     row applied the bottom-tier activity rate of 12% to all 61.2M YouTube
+     channels, including the 10k+ ones that are 60% active. Subtracting two
+     numbers scaled by different factors produces a figure that means nothing.
+     It reported 1M active YouTube channels in the 1-to-10k band when the real
+     answer is around ten times that.
+
+     Differencing is only valid for the raw populations, which are genuine
+     cumulative counts. Every rate has to be applied to the slice it belongs
+     to, then the slices summed.
+     ------------------------------------------------------------------------ */
+  const ai = tiers.indexOf(a), bi = tiers.indexOf(b);
+  const slices = [];
+  for (let x = ai; x < bi; x++) slices.push([tiers[x], tiers[x + 1]]);
+
+  function sumOver(k, bound, withPass, withActive) {
+    let total = 0;
+    for (const [lo, hi] of slices) {
+      /* Channels in [lo, hi) — a real cumulative difference, which is fine. */
+      const count = at(lo, k, bound) - at(hi, k, bound);
+      let v = count;
+      if (withPass) v *= E.pass_rates[k][bound] * adj(lo);
+      if (withActive) v *= act(lo, k);
+      total += v;
+    }
+    return total;
+  }
 
   let exist = 0, pass = 0, pLow = 0, pHigh = 0, live = 0, lLow = 0, lHigh = 0;
   const rows = [];
   for (const [k, p] of platforms) {
-    const e = at(a, k, 'mid') - at(b, k, 'mid');
-    const f = passAt(a, k, 'mid') - passAt(b, k, 'mid');
-    const g = activeAt(a, k, 'mid') - activeAt(b, k, 'mid');
+    const e = sumOver(k, 'mid', false, false);
+    const f = sumOver(k, 'mid', true, false);
+    const g = sumOver(k, 'mid', true, true);
     exist += e; pass += f; live += g;
-    pLow += passAt(a, k, 'low') - passAt(b, k, 'low');
-    pHigh += passAt(a, k, 'high') - passAt(b, k, 'high');
-    lLow += activeAt(a, k, 'low') - activeAt(b, k, 'low');
-    lHigh += activeAt(a, k, 'high') - activeAt(b, k, 'high');
+    pLow += sumOver(k, 'low', true, false);
+    pHigh += sumOver(k, 'high', true, false);
+    lLow += sumOver(k, 'low', true, true);
+    lHigh += sumOver(k, 'high', true, true);
     rows.push([p.label, e, f, g]);
   }
 

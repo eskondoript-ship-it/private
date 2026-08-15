@@ -116,7 +116,7 @@ variable *names* only.
 node --test tests/*.test.mjs
 ```
 
-38 tests. 14 on the metrics, the tiers and the normalisation — the parts where
+45 tests. 7 on the estimate arithmetic, which is where an off-by-ten hid. 14 on the metrics, the tiers and the normalisation — the parts where
 a quiet mistake ranks the wrong creator first. 24 on the safety filter, most of
 them on the direction that fails silently: a filter letting something through
 gets noticed, while removing a legitimate channel is invisible, because the
@@ -342,8 +342,8 @@ node database/estimate.js --from 1+ --to 10k+
 
 ```
     660M   exist
-    280M   would pass the filter   (43%)
-     28M   ...and still post       (4% of all, 10% of those that pass)
+    350M   would pass the filter   (54%)
+     79M   ...and still post       (12% of all, 22% of those that pass)
 ```
 
 **Active is the number that matters, and it is a tenth of the filtered one.**
@@ -358,9 +358,11 @@ Activity is applied per tier and per platform, not as one flat rate. A
 almost certainly is not, and averaging the two overstates the top and
 understates the bottom at once.
 
-The band is the `1+` row minus the `10k+` row, differenced on the **filtered**
-figures rather than the raw ones — the pass rate is not constant across the
-range, and the bottom of it is where nearly all the spam is.
+The band is built by **summing the slices between adjacent tiers**, each with
+its own pass and activity rate. It is not the `1+` row minus the `10k+` row:
+that subtraction is only valid when both rows carry the same multiplier, and
+they do not. Doing it the wrong way reported 1M active YouTube channels in this
+band when the answer is nearer 10M. `tests/estimate.test.mjs` guards it.
 
 It also prints **provenance per row**, because a measured percentile and a
 number somebody made up must never look alike in the same table. YouTube is
