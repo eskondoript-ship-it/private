@@ -322,17 +322,21 @@ node database/estimate.js
 node database/estimate.js --tier 100k+
 ```
 
-At 10k+ followers it lands around **29 million**, band 16M–56M. The number that
-matters more sits underneath it: about **83% of them are on TikTok and
+At 10k+ followers it lands around **16 million**, band 7.3M–36M. The number
+that matters more sits underneath it: about **72% of them are on TikTok and
 Instagram, which have no discovery endpoint at all**. They can never be
 reached by any amount of quota or patience — only by their owners connecting.
-Of the ~5M that is reachable, YouTube is 98% and takes about five years at free
-quota; Twitch is small enough to finish in days.
+Of the ~4.4M that is reachable, YouTube is 97% and takes about four years at
+free quota; Twitch is small enough to finish in days.
 
-Every input is in `estimate.json` with a low/high band, marked by confidence.
-Nothing in it is measured. The softest assumption is the pass rate, and one
-real Twitch run replaces the guess with the true figure from
-`build-report.json`.
+The anchors are cited in `estimate.json` under `sources` — vidIQ's July 2026
+analysis of 61.2M YouTube channels, Twitch's 2026 streamer counts, a December
+2025 Instagram creator snapshot. **TikTok is marked VERY LOW confidence and its
+row should not be quoted alone**: no creator census exists and published
+figures disagree by more than an order of magnitude.
+
+The softest assumption left is the pass rate, and one real Twitch run replaces
+that guess with the true figure from `build-report.json`.
 
 ### How many channels match a set of parameters
 
