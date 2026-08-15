@@ -324,7 +324,22 @@ async function main() {
   const external = loadExternalTerms(rules);
   const seed = JSON.parse(fs.readFileSync(path.join(HERE, 'seeds', 'channels.seed.json'), 'utf8'));
 
-  let entries = seed.channels;
+  /* Curated seeds first, then anything discover.js turned up. Order matters:
+     the hand-picked list gets measured before the discovered tail, so a
+     truncated run by --limit or exhausted quota still covers the channels
+     someone actually chose. */
+  let entries = seed.channels.slice();
+  const discovered = path.join(HERE, 'seeds', 'discovered.json');
+  if (fs.existsSync(discovered)) {
+    const d = JSON.parse(fs.readFileSync(discovered, 'utf8'));
+    const have = new Set(entries.map(e => e.platform + ':' + (e.handle || e.login || '').toLowerCase()));
+    let added = 0;
+    for (const c of d.channels || []) {
+      const k = c.platform + ':' + (c.handle || c.login || '').toLowerCase();
+      if (!have.has(k)) { entries.push(c); have.add(k); added++; }
+    }
+    if (added) log('  ' + added + ' discovered channels added to the ' + seed.channels.length + ' seeded');
+  }
   if (ONLY) entries = entries.filter(e => e.platform === ONLY);
   if (LIMIT) entries = entries.slice(0, LIMIT);
 

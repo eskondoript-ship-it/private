@@ -58,6 +58,9 @@ const rejected = read('rejected.json');
 const unresolved = read('unresolved.json');
 const report = read('build-report.json');
 const seed = JSON.parse(fs.readFileSync(path.join(HERE, 'seeds', 'channels.seed.json'), 'utf8'));
+const discFile = path.join(HERE, 'seeds', 'discovered.json');
+const discovered = fs.existsSync(discFile) ? JSON.parse(fs.readFileSync(discFile, 'utf8')) : { channels: [] };
+const ceiling = seed.channels.length + discovered.channels.length;
 
 if (!db) {
   console.error('No database yet. Run:  node database/build.js --offline');
@@ -114,7 +117,9 @@ line();
 console.log('  WHERE THAT NUMBER COMES FROM');
 console.log('');
 const measured = db.channels.length + (review ? review.channels.length : 0) + (rejected ? rejected.channels.length : 0);
-console.log('    ' + pad('seeded (the ceiling)', 30) + n(seed.channels.length));
+console.log('    ' + pad('seeded by hand', 30) + n(seed.channels.length));
+console.log('    ' + pad('found by discover.js', 30) + n(discovered.channels.length));
+console.log('    ' + pad('the ceiling', 30) + n(ceiling));
 console.log('    ' + pad('measured', 30) + n(measured));
 console.log('    ' + pad('passed the safety rules', 30) + n(db.channels.length));
 console.log('    ' + pad('waiting on a human', 30) + n(review ? review.channels.length : 0));
@@ -155,8 +160,8 @@ if (rows.length) {
 }
 
 line();
-console.log('  This counts YOUR seed list, not the platform. There is no API');
-console.log('  that counts or lists channels by criteria — the only way to');
-console.log('  raise the ceiling is to add channels to');
-console.log('  database/seeds/channels.seed.json (currently ' + seed.channels.length + ').');
+console.log('  This counts YOUR channels, not the platform. No API counts or');
+console.log('  lists channels by criteria — raise the ceiling by adding to');
+console.log('  the seed list, or run database/discover.js to find more.');
+console.log('  Ceiling right now: ' + ceiling + '.');
 console.log('');

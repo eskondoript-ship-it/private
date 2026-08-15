@@ -55,6 +55,7 @@ database.html                   browse, search and sort the database
 
 database/build.js               the pipeline: resolve -> measure -> filter -> write
 database/count.js               how many channels match a set of parameters
+database/discover.js            finds channels you do not already know about
 database/SCHEMA.md              the channel record, field by field
 database/safety/rules.json      the entire policy — terms, weights, thresholds, overrides
 database/safety/filter.js       executes the policy; holds no opinions of its own
@@ -254,6 +255,41 @@ journalism and keeps the actual problem. Everything ambiguous goes to a person.
 
 A build spends about **3 YouTube quota units per channel** out of 10,000 a day,
 and the exact figure is printed and written to `build-report.json`.
+
+### Finding channels you do not already know about
+
+`build.js` measures channels you name. `discover.js` finds them, using the only
+documented endpoints on any of the four platforms that return channels you did
+not already have an id for.
+
+```bash
+node database/discover.js --twitch-live --pages 50
+node database/discover.js --youtube-niches --budget 3000
+node database/discover.js --youtube-search "video editing tutorial"
+```
+
+Results accumulate in `seeds/discovered.json` across runs, and `build.js` reads
+it alongside the curated seed list.
+
+| Platform | What is possible | Practical yield |
+|---|---|---|
+| **Twitch** | `GET /helix/streams` pages through **every channel live right now**, 100 at a time. Real enumeration. | ~100k live at peak. Run it daily and the union approaches every active streamer. |
+| **YouTube** | `search.list?type=channel` — asking questions, not enumerating. ~500 channels per query, hard ceiling. | 100 units/call, so ~100 searches/day on free quota, up to ~5,000 channels/day. |
+| **TikTok** | **Nothing.** Display API returns the connected account only. Any other creator needs the Research API — an academic application. | 0 |
+| **Instagram** | **Nothing enumerable.** `business_discovery` looks up a professional account by a username you already have. A lookup, not a search. | 0 |
+
+Twitch is the one where something close to a census is genuinely achievable.
+TikTok and Instagram are not difficult — they are closed.
+
+### Why "every channel" is arithmetic, not ambition
+
+YouTube has upwards of a hundred million channels. Measuring one costs about 3
+quota units; a free key allows 10,000 units a day. That is ~3,300 channels a
+day, or **roughly ninety years** — and only if enumeration existed, which it
+does not. Quota increases are granted per use case after an audit, and
+"index every channel" is not a use case Google approves.
+
+This is why the database is curated. The constraint is not effort.
 
 ### How many channels match a set of parameters
 
