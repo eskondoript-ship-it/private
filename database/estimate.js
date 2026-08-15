@@ -27,6 +27,16 @@ const args = process.argv.slice(2);
 const val = (n, d) => { const i = args.indexOf(n); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
 
 const E = JSON.parse(fs.readFileSync(path.join(HERE, 'estimate.json'), 'utf8'));
+
+/* Fraction of a tier still posting, per platform. Size-dependent: a
+   1M-subscriber channel is almost certainly active, a 50-follower one almost
+   certainly is not. See `activity` in estimate.json for the sources. */
+function act(tier, platform) {
+  if (!E.activity) return 1;
+  var t = E.activity.by_tier[tier];
+  var p = E.activity.by_platform[platform];
+  return (t == null ? 1 : t) * (p == null ? 1 : p);
+}
 const TIER = val('--tier', '10k+');
 const ONLY = val('--platform', '');
 
@@ -84,16 +94,23 @@ if (FROM || TO) {
   const adj = t => (E.pass_rate_by_tier && E.pass_rate_by_tier[t] != null) ? E.pass_rate_by_tier[t] : 1;
   const at = (t, k, bound) => E.platforms[k].tiers[t][bound];
   const passAt = (t, k, bound) => at(t, k, bound) * E.pass_rates[k][bound] * adj(t);
+  /* Activity is per tier AND per platform, so it has to be applied inside the
+     subtraction like everything else. Applying one average rate to the band
+     total would overstate the top and understate the bottom at the same time. */
+  const activeAt = (t, k, bound) => passAt(t, k, bound) * act(t, k);
 
-  let exist = 0, pass = 0, pLow = 0, pHigh = 0;
+  let exist = 0, pass = 0, pLow = 0, pHigh = 0, live = 0, lLow = 0, lHigh = 0;
   const rows = [];
   for (const [k, p] of platforms) {
     const e = at(a, k, 'mid') - at(b, k, 'mid');
     const f = passAt(a, k, 'mid') - passAt(b, k, 'mid');
-    exist += e; pass += f;
+    const g = activeAt(a, k, 'mid') - activeAt(b, k, 'mid');
+    exist += e; pass += f; live += g;
     pLow += passAt(a, k, 'low') - passAt(b, k, 'low');
     pHigh += passAt(a, k, 'high') - passAt(b, k, 'high');
-    rows.push([p.label, e, f]);
+    lLow += activeAt(a, k, 'low') - activeAt(b, k, 'low');
+    lHigh += activeAt(a, k, 'high') - activeAt(b, k, 'high');
+    rows.push([p.label, e, f, g]);
   }
 
   console.log('');
@@ -103,19 +120,27 @@ if (FROM || TO) {
   console.log('    ' + lpad(human(sig(exist)), 8) + '   exist');
   console.log('    ' + lpad(human(sig(pass)), 8) + '   would pass the filter   (' +
     Math.round((pass / exist) * 100) + '%)');
+  console.log('    ' + lpad(human(sig(live)), 8) + '   ...and still post       (' +
+    Math.round((live / exist) * 100) + '% of all, ' + Math.round((live / pass) * 100) + '% of those that pass)');
   console.log('');
   console.log('    band on the filtered figure: ' + human(sig(pLow)) + ' to ' + human(sig(pHigh)));
+  console.log('    band on the active figure:   ' + human(sig(lLow)) + ' to ' + human(sig(lHigh)));
   console.log('');
   rule();
   console.log('  BY PLATFORM');
   console.log('');
-  console.log('  ' + pad('platform', 14) + lpad('exist', 12) + lpad('pass', 12) + lpad('rate', 8));
-  console.log('  ' + '·'.repeat(50));
-  for (const [label, e, f] of rows) {
+  console.log('  ' + pad('platform', 14) + lpad('exist', 12) + lpad('pass', 12) + lpad('active', 12) + lpad('active %', 10));
+  console.log('  ' + '·'.repeat(60));
+  for (const [label, e, f, g] of rows) {
     console.log('  ' + pad(label, 14) + lpad(human(sig(e)), 12) + lpad(human(sig(f)), 12) +
-      lpad(Math.round((f / e) * 100) + '%', 8));
+      lpad(human(sig(g)), 12) + lpad(Math.round((g / e) * 100) + '%', 10));
   }
-  console.log('  ' + '·'.repeat(50));
+  console.log('  ' + '·'.repeat(60));
+  console.log('');
+  console.log('    "Active" means at least one public upload in the last 90 days. Most');
+  console.log('    channels in this range have none — they were made, used a few times');
+  console.log('    and abandoned. A 2019 YouTube cohort study found 74.8% dormant,');
+  console.log('    fading or gone seven years on, and that is the shape used here.');
   console.log('');
   console.log('    The pass rate is far lower here than at 10k+ because this range is');
   console.log('    where the scam channels, generators and engagement farms live. See');

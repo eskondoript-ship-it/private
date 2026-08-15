@@ -343,7 +343,20 @@ node database/estimate.js --from 1+ --to 10k+
 ```
     660M   exist
     280M   would pass the filter   (43%)
+     28M   ...and still post       (4% of all, 10% of those that pass)
 ```
+
+**Active is the number that matters, and it is a tenth of the filtered one.**
+Most channels in this range were made, used a few times and abandoned: a 2019
+YouTube cohort study found 74.8% dormant, fading or gone seven years on.
+"Active" here means at least one public upload in the last 90 days — there is no
+shared definition, which is why published YouTube active-channel counts range
+from 47M to 138M.
+
+Activity is applied per tier and per platform, not as one flat rate. A
+1M-subscriber channel is almost certainly still posting; a 50-follower one
+almost certainly is not, and averaging the two overstates the top and
+understates the bottom at once.
 
 The band is the `1+` row minus the `10k+` row, differenced on the **filtered**
 figures rather than the raw ones — the pass rate is not constant across the

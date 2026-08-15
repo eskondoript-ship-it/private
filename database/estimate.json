@@ -37,6 +37,12 @@
       "One widely repeated stat says 'over 1.5 million TikTok content creators globally' — plainly a narrow definition, since Creator Rewards alone requires 10k followers and far more than 1.5M accounts clear it.",
       "TikTok publishes no creator census and there is no trustworthy third-party index.",
       "The band below is therefore enormous on purpose. Treat any TikTok row in the output as a placeholder, not an estimate."
+    ],
+    "activity": [
+      "CreatorMap 7-year cohort study: 74.8% of the 2019 YouTube cohort is now Dormant, Fading or Gone; only 21% still growing. https://creatormap.io/blog/youtube-channel-survival-rate-study-2026",
+      "Instagram: 5.9M accounts have 10k+ followers but only ~3.3M still post — 56% active at that tier.",
+      "Twitch: 13.6M people streamed during 2026; ~2.8M channels were active in May 2026 — roughly 21% of the annual cohort in any given month.",
+      "'Active' has no shared definition. The common one is a public upload inside a rolling 90 days, which is what these rates assume. Published YouTube active-channel counts range from 47M to 138M depending on the definition used, which is the whole problem in one line."
     ]
   },
   "platforms": {
@@ -372,5 +378,37 @@
     "50k+": 1.0,
     "100k+": 1.0,
     "1M+": 1.0
+  },
+  "activity": {
+    "_note": [
+      "The fraction of channels in a tier that still post. Activity is strongly",
+      "size-dependent — a 1M-subscriber channel is almost certainly active and a",
+      "50-follower channel almost certainly is not — so one flat rate would be",
+      "badly wrong at both ends. These are per-tier.",
+      "",
+      "Anchored on the CreatorMap cohort study for the shape and on the Instagram",
+      "10k+ figure (5.9M exist, 3.3M active = 56%) for the level. Everything",
+      "between those two points is interpolation.",
+      "",
+      "Definition assumed: at least one public upload in the last 90 days."
+    ],
+    "by_tier": {
+      "1+": 0.12,
+      "100+": 0.2,
+      "500+": 0.3,
+      "1k+": 0.38,
+      "5k+": 0.52,
+      "10k+": 0.6,
+      "50k+": 0.72,
+      "100k+": 0.8,
+      "1M+": 0.9
+    },
+    "by_platform": {
+      "_note": "Multiplier on the tier rate. Twitch is lower because live streaming churns harder: 2.8M active in a month against 13.6M who streamed in the year.",
+      "youtube": 1.0,
+      "twitch": 0.75,
+      "tiktok": 1.1,
+      "instagram": 0.93
+    }
   }
 }
