@@ -64,6 +64,69 @@ if (!tiers.includes(TIER)) {
   process.exit(1);
 }
 
+/* ----------------------------------------------------------------------------
+   Band mode: a range rather than a cumulative tier.
+
+   "1 to 10k" is not a row in the ladder — the ladder is cumulative, so the
+   band is the 1+ row minus the 10k+ row. Differencing the FILTERED figures,
+   not the raw ones, because the pass rate is not constant across the range:
+   the bottom of the band is where almost all the spam is.
+   ---------------------------------------------------------------------------- */
+const FROM = val('--from', '');
+const TO = val('--to', '');
+if (FROM || TO) {
+  const a = FROM || tiers[0];
+  const b = TO || tiers[tiers.length - 1];
+  if (!tiers.includes(a) || !tiers.includes(b)) {
+    console.error('Tiers are: ' + tiers.join(', '));
+    process.exit(1);
+  }
+  const adj = t => (E.pass_rate_by_tier && E.pass_rate_by_tier[t] != null) ? E.pass_rate_by_tier[t] : 1;
+  const at = (t, k, bound) => E.platforms[k].tiers[t][bound];
+  const passAt = (t, k, bound) => at(t, k, bound) * E.pass_rates[k][bound] * adj(t);
+
+  let exist = 0, pass = 0, pLow = 0, pHigh = 0;
+  const rows = [];
+  for (const [k, p] of platforms) {
+    const e = at(a, k, 'mid') - at(b, k, 'mid');
+    const f = passAt(a, k, 'mid') - passAt(b, k, 'mid');
+    exist += e; pass += f;
+    pLow += passAt(a, k, 'low') - passAt(b, k, 'low');
+    pHigh += passAt(a, k, 'high') - passAt(b, k, 'high');
+    rows.push([p.label, e, f]);
+  }
+
+  console.log('');
+  console.log('  CHANNELS BETWEEN ' + a.replace('+', '') + ' AND ' + b.replace('+', '') + ' FOLLOWERS');
+  rule();
+  console.log('');
+  console.log('    ' + lpad(human(sig(exist)), 8) + '   exist');
+  console.log('    ' + lpad(human(sig(pass)), 8) + '   would pass the filter   (' +
+    Math.round((pass / exist) * 100) + '%)');
+  console.log('');
+  console.log('    band on the filtered figure: ' + human(sig(pLow)) + ' to ' + human(sig(pHigh)));
+  console.log('');
+  rule();
+  console.log('  BY PLATFORM');
+  console.log('');
+  console.log('  ' + pad('platform', 14) + lpad('exist', 12) + lpad('pass', 12) + lpad('rate', 8));
+  console.log('  ' + '·'.repeat(50));
+  for (const [label, e, f] of rows) {
+    console.log('  ' + pad(label, 14) + lpad(human(sig(e)), 12) + lpad(human(sig(f)), 12) +
+      lpad(Math.round((f / e) * 100) + '%', 8));
+  }
+  console.log('  ' + '·'.repeat(50));
+  console.log('');
+  console.log('    The pass rate is far lower here than at 10k+ because this range is');
+  console.log('    where the scam channels, generators and engagement farms live. See');
+  console.log('    pass_rate_by_tier in estimate.json.');
+  console.log('');
+  console.log('    TikTok and Instagram are most of both columns and neither can be');
+  console.log('    discovered through any API, so most of this is not reachable.');
+  console.log('');
+  process.exit(0);
+}
+
 console.log('');
 console.log('  APPROXIMATELY HOW MANY CHANNELS WOULD PASS — ' + TIER + ' followers');
 rule();

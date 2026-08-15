@@ -334,6 +334,21 @@ more than any single row:
   1M+              33k         740         80k         61k        180k
 ```
 
+For a range rather than a cumulative tier, use `--from` / `--to`:
+
+```bash
+node database/estimate.js --from 1+ --to 10k+
+```
+
+```
+    660M   exist
+    280M   would pass the filter   (43%)
+```
+
+The band is the `1+` row minus the `10k+` row, differenced on the **filtered**
+figures rather than the raw ones — the pass rate is not constant across the
+range, and the bottom of it is where nearly all the spam is.
+
 It also prints **provenance per row**, because a measured percentile and a
 number somebody made up must never look alike in the same table. YouTube is
 measured from 100 to 100k subscribers; Twitch below 1k and every TikTok row
