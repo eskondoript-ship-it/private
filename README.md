@@ -319,8 +319,25 @@ out there" — a Fermi estimate, population anchors times expected pass rate.
 
 ```bash
 node database/estimate.js
-node database/estimate.js --tier 100k+
+node database/estimate.js --tier 1k+      # any tier from 1+ to 1M+
 ```
+
+Every run prints the whole ladder, 1 follower to 1M, because the shape matters
+more than any single row:
+
+```
+  tier         YouTube      Twitch      TikTok   Instagram       total
+  1+               30M        4.6M        180M         90M        300M
+  1k+              21M        710k         46M         19M         87M
+  10k+            4.3M        120k        6.4M        4.8M         16M
+  100k+           700k         12k        720k        570k          2M
+  1M+              33k         740         80k         61k        180k
+```
+
+It also prints **provenance per row**, because a measured percentile and a
+number somebody made up must never look alike in the same table. YouTube is
+measured from 100 to 100k subscribers; Twitch below 1k and every TikTok row
+are not.
 
 At 10k+ followers it lands around **16 million**, band 7.3M–36M. The number
 that matters more sits underneath it: about **72% of them are on TikTok and

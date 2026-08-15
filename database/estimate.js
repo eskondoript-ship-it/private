@@ -71,16 +71,21 @@ console.log('');
 console.log('  ' + pad('platform', 12) + lpad('exist', 12) + lpad('pass rate', 12) + lpad('would pass', 14) + '   confidence');
 console.log('  ' + '·'.repeat(72));
 
+/* The tier multiplier is the whole reason the bottom of the distribution is
+   not simply "more of the same". See pass_rate_by_tier in estimate.json. */
+const tierAdj = t => (E.pass_rate_by_tier && E.pass_rate_by_tier[t] != null) ? E.pass_rate_by_tier[t] : 1;
+
 let totLow = 0, totMid = 0, totHigh = 0;
 for (const [key, p] of platforms) {
   const t = p.tiers[TIER];
   const r = E.pass_rates[key];
-  const low = t.low * r.low, mid = t.mid * r.mid, high = t.high * r.high;
+  const adj = tierAdj(TIER);
+  const low = t.low * r.low * adj, mid = t.mid * r.mid * adj, high = t.high * r.high * adj;
   totLow += low; totMid += mid; totHigh += high;
 
   console.log('  ' + pad(p.label, 12) +
     lpad(human(t.mid), 12) +
-    lpad(Math.round(r.mid * 100) + '%', 12) +
+    lpad(Math.round(r.mid * adj * 100) + '%', 12) +
     lpad(human(sig(mid)), 14) +
     '   ' + p.confidence);
 }
@@ -89,6 +94,41 @@ console.log('  ' + pad('all four', 12) + lpad('', 12) + lpad('', 12) + lpad(huma
 console.log('');
 console.log('    Somewhere between ' + human(sig(totLow)) + ' and ' + human(sig(totHigh)) +
             '. Call it ' + human(sig(totMid)) + '.');
+if (tierAdj(TIER) < 1) {
+  console.log('    Pass rates are cut to ' + Math.round(tierAdj(TIER) * 100) + '% of the headline figure at this tier —');
+  console.log('    see "the bottom of the distribution" below.');
+}
+console.log('');
+
+/* Where each number came from. A measured percentile and a number somebody
+   made up should never look alike in the same table. */
+console.log('  Provenance at ' + TIER + ':');
+for (const [, p] of platforms) {
+  console.log('    ' + pad(p.label, 12) + (p.tiers[TIER].source || 'unstated'));
+}
+console.log('');
+
+/* --------------------------------------------------------------------------
+   The whole ladder, because the shape is the point
+   -------------------------------------------------------------------------- */
+rule();
+console.log('  THE WHOLE LADDER — how many would pass at every tier');
+console.log('');
+console.log('  ' + pad('tier', 8) + platforms.map(([, p]) => lpad(p.label, 12)).join('') + lpad('total', 12));
+console.log('  ' + '·'.repeat(72));
+for (const t of tiers) {
+  const adj = tierAdj(t);
+  let sum = 0;
+  const cells = platforms.map(([k, p]) => {
+    const v = p.tiers[t].mid * E.pass_rates[k].mid * adj;
+    sum += v;
+    return lpad(human(sig(v)), 12);
+  });
+  console.log('  ' + pad(t, 8) + cells.join('') + lpad(human(sig(sum)), 12) + (t === TIER ? '   <-' : ''));
+}
+console.log('  ' + '·'.repeat(72));
+console.log('');
+console.log('    Each row is cumulative: "1k+" contains everything in "10k+".');
 console.log('');
 
 /* --------------------------------------------------------------------------
@@ -171,4 +211,26 @@ console.log('    The softest assumption is the pass rate. The way to firm it up 
 console.log('    to measure a few thousand real channels and read the true rate out');
 console.log('    of build-report.json, then edit pass_rates in estimate.json. After');
 console.log('    one real Twitch run that number stops being a guess.');
+console.log('');
+rule();
+console.log('  THE BOTTOM OF THE DISTRIBUTION');
+console.log('');
+console.log('    Going below 1k followers does not just add volume — it changes what');
+console.log('    the filter is for. Scam channels, generators, engagement farms and');
+console.log('    abandoned spam are cheap to create and they all live at 1-500');
+console.log('    followers. So pass rates are scaled down there:');
+console.log('');
+for (const t of tiers) {
+  const a = tierAdj(t);
+  console.log('      ' + pad(t, 8) + lpad(Math.round(a * 100) + '%', 6) + ' of the headline pass rate' +
+    (a === 1 ? '' : '   <- adjusted'));
+}
+console.log('');
+console.log('    Those multipliers are judgement, not measurement. Unlike the');
+console.log('    population figures they can be settled cheaply: measure ten thousand');
+console.log('    real channels and the true rate is in build-report.json.');
+console.log('');
+console.log('    Worth saying plainly: at 1+ follower the YouTube figure is 61.2M');
+console.log('    channels, against ~113.9M on the platform. The 50M gap is channels');
+console.log('    with no subscriber at all, which no useful database contains.');
 console.log('');

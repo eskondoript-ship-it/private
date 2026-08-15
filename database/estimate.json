@@ -43,64 +43,122 @@
     "youtube": {
       "label": "YouTube",
       "confidence": "high",
-      "note": "vidIQ July 2026 measured these directly across 61.2M channels. The platform total is ~113.9M, but the overwhelming majority are dormant or empty, so the tiers below start where an audience starts.",
+      "note": "vidIQ, July 2026, across 61.2M channels that have at least one public subscriber. The platform total is ~113.9M; the gap is channels with no subscriber at all. Everything from 100 to 100k here is a measured percentile, not a guess.",
       "tiers": {
+        "1+": {
+          "mid": 61200000,
+          "low": 55000000,
+          "high": 70000000,
+          "source": "measured — the analysed base is \"channels with >=1 public subscriber\""
+        },
+        "100+": {
+          "mid": 41700000,
+          "low": 37000000,
+          "high": 47000000,
+          "source": "measured — 68.2%"
+        },
+        "500+": {
+          "mid": 29700000,
+          "low": 26000000,
+          "high": 34000000,
+          "source": "measured — 48.5%"
+        },
         "1k+": {
           "mid": 24800000,
-          "low": 20000000,
-          "high": 34000000
+          "low": 22000000,
+          "high": 28000000,
+          "source": "measured — 40.6%"
+        },
+        "5k+": {
+          "mid": 7900000,
+          "low": 5500000,
+          "high": 11000000,
+          "source": "INTERPOLATED between the 1k and 10k percentiles — not published"
         },
         "10k+": {
           "mid": 4830000,
-          "low": 3900000,
-          "high": 6500000
+          "low": 4300000,
+          "high": 5400000,
+          "source": "measured — 7.9%"
         },
         "50k+": {
           "mid": 1600000,
           "low": 1200000,
-          "high": 2200000
+          "high": 2200000,
+          "source": "interpolated between the 10k and 100k percentiles"
         },
         "100k+": {
           "mid": 792000,
           "low": 550000,
-          "high": 950000
+          "high": 950000,
+          "source": "measured — 1.3%, 792,376 channels"
         },
         "1M+": {
           "mid": 38000,
           "low": 32000,
-          "high": 50000
+          "high": 50000,
+          "source": "reported — 35,000+ channels have crossed 1M"
         }
       }
     },
     "twitch": {
       "label": "Twitch",
-      "confidence": "high",
-      "note": "7.06M streamers broadcast during 2026 and ~2.8M channels were active in May 2026 alone. Live enumeration lets you check any estimate here against a real count, which is why this row is the most trustworthy in the file.",
+      "confidence": "high at the top, estimated below 1k",
+      "note": "13.6M people streamed during 2026, 6.8M monthly active, 2.48M affiliates and 68,147 partners. Twitch publishes no follower distribution, so every tier between those anchors is an estimate — but it is the one platform where live enumeration lets you go and check.",
       "tiers": {
+        "1+": {
+          "mid": 13600000,
+          "low": 11000000,
+          "high": 16000000,
+          "source": "reported — 13.6M people streamed on Twitch during 2026"
+        },
+        "100+": {
+          "mid": 3200000,
+          "low": 2000000,
+          "high": 5000000,
+          "source": "ESTIMATED — no published follower distribution exists"
+        },
+        "500+": {
+          "mid": 1800000,
+          "low": 1100000,
+          "high": 2900000,
+          "source": "ESTIMATED — anchored on 2.48M affiliates (50-follower threshold)"
+        },
         "1k+": {
-          "mid": 1500000,
-          "low": 1000000,
-          "high": 2500000
+          "mid": 1200000,
+          "low": 800000,
+          "high": 2000000,
+          "source": "ESTIMATED — no published distribution"
+        },
+        "5k+": {
+          "mid": 400000,
+          "low": 250000,
+          "high": 650000,
+          "source": "ESTIMATED"
         },
         "10k+": {
           "mid": 200000,
           "low": 140000,
-          "high": 300000
+          "high": 300000,
+          "source": "ESTIMATED — 6% of streamers exceed 100 average viewers"
         },
         "50k+": {
           "mid": 45000,
           "low": 30000,
-          "high": 65000
+          "high": 65000,
+          "source": "ESTIMATED"
         },
         "100k+": {
           "mid": 20000,
           "low": 14000,
-          "high": 30000
+          "high": 30000,
+          "source": "ESTIMATED — 68,147 partners is the nearest published anchor"
         },
         "1M+": {
           "mid": 1200,
           "low": 800,
-          "high": 1800
+          "high": 1800,
+          "source": "ESTIMATED"
         }
       }
     },
@@ -109,30 +167,59 @@
       "confidence": "VERY LOW",
       "note": "No creator census exists and published figures disagree by more than an order of magnitude. These bands are placeholders wide enough to admit that. Do not quote the TikTok row on its own.",
       "tiers": {
+        "1+": {
+          "mid": 400000000,
+          "low": 150000000,
+          "high": 900000000,
+          "source": "NO SOURCE — TikTok publishes no creator census at any tier"
+        },
+        "100+": {
+          "mid": 180000000,
+          "low": 60000000,
+          "high": 450000000,
+          "source": "NO SOURCE"
+        },
+        "500+": {
+          "mid": 90000000,
+          "low": 25000000,
+          "high": 250000000,
+          "source": "NO SOURCE"
+        },
         "1k+": {
           "mid": 60000000,
           "low": 10000000,
-          "high": 200000000
+          "high": 200000000,
+          "source": "NO SOURCE"
+        },
+        "5k+": {
+          "mid": 18000000,
+          "low": 3000000,
+          "high": 55000000,
+          "source": "NO SOURCE"
         },
         "10k+": {
           "mid": 8000000,
           "low": 1500000,
-          "high": 25000000
+          "high": 25000000,
+          "source": "NO SOURCE — published figures disagree by more than 10x"
         },
         "50k+": {
           "mid": 2000000,
           "low": 400000,
-          "high": 6000000
+          "high": 6000000,
+          "source": "NO SOURCE"
         },
         "100k+": {
           "mid": 900000,
           "low": 180000,
-          "high": 2800000
+          "high": 2800000,
+          "source": "NO SOURCE"
         },
         "1M+": {
           "mid": 100000,
           "low": 30000,
-          "high": 280000
+          "high": 280000,
+          "source": "NO SOURCE"
         }
       }
     },
@@ -141,30 +228,59 @@
       "confidence": "medium",
       "note": "5.9M accounts have 10k+ followers as of a 31 Dec 2025 snapshot, only ~3.3M of them still posting. The nano tier is 76.86% of influencer accounts, which puts 1k+ near 25M. An earlier version of this file guessed 15M at 10k+ — two and a half times too high.",
       "tiers": {
+        "1+": {
+          "mid": 200000000,
+          "low": 150000000,
+          "high": 300000000,
+          "source": "ESTIMATED — professional (Creator/Business) accounts, the only ones the API can read at all"
+        },
+        "100+": {
+          "mid": 90000000,
+          "low": 60000000,
+          "high": 140000000,
+          "source": "ESTIMATED — no published distribution"
+        },
+        "500+": {
+          "mid": 40000000,
+          "low": 26000000,
+          "high": 60000000,
+          "source": "ESTIMATED"
+        },
         "1k+": {
           "mid": 25000000,
           "low": 18000000,
-          "high": 35000000
+          "high": 35000000,
+          "source": "derived — 10k+ is 5.9M and the 1k-10k nano tier is 76.86% of influencer accounts; the two agree"
+        },
+        "5k+": {
+          "mid": 10000000,
+          "low": 6500000,
+          "high": 15000000,
+          "source": "INTERPOLATED"
         },
         "10k+": {
           "mid": 5900000,
           "low": 4000000,
-          "high": 9000000
+          "high": 9000000,
+          "source": "measured — 5.9M accounts, snapshot 31 Dec 2025; only ~3.3M still posting"
         },
         "50k+": {
           "mid": 1600000,
           "low": 1000000,
-          "high": 2600000
+          "high": 2600000,
+          "source": "ESTIMATED"
         },
         "100k+": {
           "mid": 700000,
           "low": 450000,
-          "high": 1200000
+          "high": 1200000,
+          "source": "ESTIMATED"
         },
         "1M+": {
           "mid": 75000,
           "low": 45000,
-          "high": 130000
+          "high": 130000,
+          "source": "ESTIMATED"
         }
       }
     }
@@ -230,5 +346,31 @@
       "ceiling": 0,
       "why": "business_discovery is a lookup by a username you already hold, not a search"
     }
+  },
+  "pass_rate_by_tier": {
+    "_note": [
+      "The pass rates above were reasoned about for channels that have an audience.",
+      "They do not hold at the bottom of the distribution, and pretending they do",
+      "is the single biggest error available in this file.",
+      "",
+      "Scam channels, robux generators, engagement farms and abandoned spam all",
+      "live at 1-500 followers. They are cheap to create and there are millions of",
+      "them. A filter aimed at a 13-18 audience rejects a far larger share down",
+      "there than it does among channels anyone actually watches.",
+      "",
+      "These multipliers scale the platform pass rate by tier. They are judgement,",
+      "not measurement — and unlike the population figures they can be settled",
+      "cheaply: measure ten thousand real channels at 1k-10k and read the true",
+      "rate out of build-report.json."
+    ],
+    "1+": 0.55,
+    "100+": 0.68,
+    "500+": 0.85,
+    "1k+": 0.95,
+    "5k+": 1.0,
+    "10k+": 1.0,
+    "50k+": 1.0,
+    "100k+": 1.0,
+    "1M+": 1.0
   }
 }
