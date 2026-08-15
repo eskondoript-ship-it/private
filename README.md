@@ -56,6 +56,8 @@ database.html                   browse, search and sort the database
 database/build.js               the pipeline: resolve -> measure -> filter -> write
 database/count.js               how many channels match a set of parameters
 database/discover.js            finds channels you do not already know about
+database/estimate.js            approximately how many exist that would pass
+database/estimate.json          the population anchors, with confidence bands
 database/SCHEMA.md              the channel record, field by field
 database/safety/rules.json      the entire policy — terms, weights, thresholds, overrides
 database/safety/filter.js       executes the policy; holds no opinions of its own
@@ -309,6 +311,28 @@ does not. Quota increases are granted per use case after an audit, and
 "index every channel" is not a use case Google approves.
 
 This is why the database is curated. The constraint is not effort.
+
+### Approximately how many exist
+
+`count.js` answers "how many do I have". `estimate.js` answers "how many are
+out there" — a Fermi estimate, population anchors times expected pass rate.
+
+```bash
+node database/estimate.js
+node database/estimate.js --tier 100k+
+```
+
+At 10k+ followers it lands around **29 million**, band 16M–56M. The number that
+matters more sits underneath it: about **83% of them are on TikTok and
+Instagram, which have no discovery endpoint at all**. They can never be
+reached by any amount of quota or patience — only by their owners connecting.
+Of the ~5M that is reachable, YouTube is 98% and takes about five years at free
+quota; Twitch is small enough to finish in days.
+
+Every input is in `estimate.json` with a low/high band, marked by confidence.
+Nothing in it is measured. The softest assumption is the pass rate, and one
+real Twitch run replaces the guess with the true figure from
+`build-report.json`.
 
 ### How many channels match a set of parameters
 

@@ -1,0 +1,104 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-08-15",
+
+  "_what_this_is": [
+    "Population anchors for estimating how many channels exist that would pass",
+    "the filter. These are ORDER-OF-MAGNITUDE figures from public reporting,",
+    "not measurements, and several are years old. They live in JSON rather than",
+    "in code so that when you find a better number you can replace it and see",
+    "the estimate move.",
+    "",
+    "Every figure has a band. Use the band, not the midpoint — the midpoint is",
+    "false precision and the band is the honest answer.",
+    "",
+    "Nothing in this file was measured by this project. The measured numbers",
+    "live in data/build-report.json and are much smaller."
+  ],
+
+  "platforms": {
+    "youtube": {
+      "label": "YouTube",
+      "confidence": "medium",
+      "note": "Total channel count is widely cited near 114 million, most of them dormant or empty. The tiers below are the ones with any audience at all.",
+      "tiers": {
+        "1k+":   { "mid": 30000000, "low": 20000000, "high": 45000000 },
+        "10k+":  { "mid": 5500000,  "low": 4000000,  "high": 8000000 },
+        "50k+":  { "mid": 1400000,  "low": 1000000,  "high": 2000000 },
+        "100k+": { "mid": 900000,   "low": 700000,   "high": 1200000 },
+        "1M+":   { "mid": 55000,    "low": 45000,    "high": 70000 }
+      }
+    },
+
+    "twitch": {
+      "label": "Twitch",
+      "confidence": "medium-high",
+      "note": "The only platform where the live enumeration endpoint lets you sanity-check the estimate against a real count. Roughly 80-100k channels are live at peak.",
+      "tiers": {
+        "1k+":   { "mid": 1500000, "low": 1000000, "high": 2200000 },
+        "10k+":  { "mid": 200000,  "low": 140000,  "high": 300000 },
+        "50k+":  { "mid": 45000,   "low": 30000,   "high": 65000 },
+        "100k+": { "mid": 20000,   "low": 14000,   "high": 30000 },
+        "1M+":   { "mid": 1200,    "low": 800,     "high": 1800 }
+      }
+    },
+
+    "tiktok": {
+      "label": "TikTok",
+      "confidence": "low",
+      "note": "The least knowable of the four. No public creator census, no third-party index worth trusting, and the follower distribution is far flatter than YouTube's. Treat these as the widest bands in the file.",
+      "tiers": {
+        "1k+":   { "mid": 120000000, "low": 60000000, "high": 250000000 },
+        "10k+":  { "mid": 15000000,  "low": 8000000,  "high": 30000000 },
+        "50k+":  { "mid": 3500000,   "low": 1800000,  "high": 7000000 },
+        "100k+": { "mid": 1500000,   "low": 800000,   "high": 3000000 },
+        "1M+":   { "mid": 150000,    "low": 80000,    "high": 300000 }
+      }
+    },
+
+    "instagram": {
+      "label": "Instagram",
+      "confidence": "low",
+      "note": "Meta reports professional (Creator or Business) accounts in the hundreds of millions, but most have no audience. Only professional accounts can return insights at all, so they are the only ones this project could ever measure.",
+      "tiers": {
+        "1k+":   { "mid": 100000000, "low": 60000000, "high": 180000000 },
+        "10k+":  { "mid": 15000000,  "low": 9000000,  "high": 25000000 },
+        "50k+":  { "mid": 3000000,   "low": 1800000,  "high": 5000000 },
+        "100k+": { "mid": 1000000,   "low": 600000,   "high": 1800000 },
+        "1M+":   { "mid": 100000,    "low": 60000,    "high": 180000 }
+      }
+    }
+  },
+
+  "pass_rates": {
+    "_note": [
+      "The fraction expected to survive the teen-safe rules in safety/rules.json.",
+      "These are the softest assumptions in the file — the honest way to firm",
+      "them up is to measure a few thousand real channels and read the actual",
+      "rate out of build-report.json, then come back and edit these.",
+      "",
+      "Twitch is much lower than the others for one specific reason: a large",
+      "share of active channels declare themselves mature, and the filter takes",
+      "that declaration at face value."
+    ],
+    "youtube":   { "mid": 0.88, "low": 0.82, "high": 0.93 },
+    "twitch":    { "mid": 0.62, "low": 0.50, "high": 0.72 },
+    "tiktok":    { "mid": 0.80, "low": 0.70, "high": 0.88 },
+    "instagram": { "mid": 0.82, "low": 0.74, "high": 0.89 }
+  },
+
+  "reachable": {
+    "_note": [
+      "What this project could actually measure, which is a different question",
+      "from how many exist. Discovery ceilings, not population estimates.",
+      "",
+      "Twitch is the outlier: /helix/streams really does enumerate everything",
+      "live, so daily runs converge on the active population rather than on a",
+      "sample of it."
+    ],
+    "youtube": { "per_day": 2600, "ceiling": null, "why": "10,000 quota units/day; ~3 to measure a channel, 100 per discovery search" },
+    "twitch": { "per_day": 100000, "ceiling": null, "why": "no quota, 800 requests/min; live enumeration converges on the active population over days" },
+    "tiktok": { "per_day": 0, "ceiling": 0, "why": "no endpoint for any creator but the connected one, short of the academic Research API" },
+    "instagram": { "per_day": 0, "ceiling": 0, "why": "business_discovery is a lookup by a username you already hold, not a search" }
+  }
+}
