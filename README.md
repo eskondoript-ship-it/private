@@ -116,7 +116,7 @@ variable *names* only.
 node --test tests/*.test.mjs
 ```
 
-45 tests. 7 on the estimate arithmetic, which is where an off-by-ten hid. 14 on the metrics, the tiers and the normalisation — the parts where
+46 tests. 8 on the estimate arithmetic, which is where an off-by-ten hid. 14 on the metrics, the tiers and the normalisation — the parts where
 a quiet mistake ranks the wrong creator first. 24 on the safety filter, most of
 them on the direction that fails silently: a filter letting something through
 gets noticed, while removing a legitimate channel is invisible, because the
@@ -327,12 +327,16 @@ more than any single row:
 
 ```
   tier         YouTube      Twitch      TikTok   Instagram       total
-  1+               30M        4.6M        180M         90M        300M
-  1k+              21M        710k         46M         19M         87M
+  1+               41M        5.2M        210M        110M        370M
+  1k+              21M        720k         46M          20M         88M
   10k+            4.3M        120k        6.4M        4.8M         16M
   100k+           700k         12k        720k        570k          2M
   1M+              33k         740         80k         61k        180k
 ```
+
+Every figure is the sum of the slices between adjacent tiers, each carrying its
+own pass and activity rate. Applying one tier's rate to a whole cumulative
+count is the off-by-ten described above, and it was present in both modes.
 
 For a range rather than a cumulative tier, use `--from` / `--to`:
 
@@ -369,7 +373,8 @@ number somebody made up must never look alike in the same table. YouTube is
 measured from 100 to 100k subscribers; Twitch below 1k and every TikTok row
 are not.
 
-At 10k+ followers it lands around **16 million**, band 7.3M–36M. The number
+At 10k+ followers it lands around **16 million**, band 7.6M–35M. At 1+ it is
+**370M**. The number
 that matters more sits underneath it: about **72% of them are on TikTok and
 Instagram, which have no discovery endpoint at all**. They can never be
 reached by any amount of quota or patience — only by their owners connecting.

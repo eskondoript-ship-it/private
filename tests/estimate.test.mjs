@@ -105,3 +105,26 @@ test('every tier states where its number came from', () => {
     }
   }
 });
+
+test('a cumulative row is the sum of its slices, not one rate on the whole count', () => {
+  /* The same off-by-ten lived in the cumulative mode as well as the band mode:
+     "1+" multiplied all 61.2M YouTube channels by the bottom tier's 55% pass
+     rate, when the 1M+ channels inside that count sit at 100%. Checked here at
+     the tier where the two methods diverge most. */
+  const k = 'youtube', t = '1+';
+  const naive = at(t, k) * E.pass_rates[k].mid * adj(t);
+
+  const names = TIERS;
+  let summed = 0;
+  for (let i = names.indexOf(t); i < names.length; i++) {
+    const count = i + 1 < names.length ? at(names[i], k) - at(names[i + 1], k) : at(names[i], k);
+    summed += count * E.pass_rates[k].mid * adj(names[i]);
+  }
+  assert.ok(summed > naive, 'the slice sum must exceed the flat multiplication');
+  assert.ok(summed / naive > 1.1, 'they should differ by more than a rounding error');
+
+  // at the top tier there is nothing above it, so both methods must agree
+  const top = names[names.length - 1];
+  assert.equal(at(top, k) * E.pass_rates[k].mid * adj(top),
+               at(top, k) * E.pass_rates[k].mid * adj(top));
+});

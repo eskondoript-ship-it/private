@@ -37,6 +37,39 @@ function act(tier, platform) {
   var p = E.activity.by_platform[platform];
   return (t == null ? 1 : t) * (p == null ? 1 : p);
 }
+/* ----------------------------------------------------------------------------
+   The one place rates get applied to populations.
+
+   A cumulative row like "1k+" spans every tier above it, and each of those
+   tiers has its own pass and activity rate. Multiplying the whole cumulative
+   count by the 1k+ rate applies the bottom of the range's rate to the top of
+   it — which is the off-by-ten that made the 1-to-10k band read 1M active
+   YouTube channels instead of 10M.
+
+   So every figure is the sum of the slices between adjacent tiers, plus the
+   top tier itself. Both the headline table and the ladder call this, so they
+   cannot drift apart.
+   ---------------------------------------------------------------------------- */
+function cumulative(tier, k, bound, withPass, withActive) {
+  const T = E.platforms[k].tiers;
+  const names = Object.keys(T);
+  const start = names.indexOf(tier);
+  let total = 0;
+  for (let i = start; i < names.length; i++) {
+    const lo = names[i];
+    /* the slice [lo, next), or the open-ended top tier */
+    const count = i + 1 < names.length ? T[lo][bound] - T[names[i + 1]][bound] : T[lo][bound];
+    let v = count;
+    if (withPass) v *= E.pass_rates[k][bound] * passAdj(lo);
+    if (withActive) v *= act(lo, k);
+    total += v;
+  }
+  return total;
+}
+function passAdj(t) {
+  return (E.pass_rate_by_tier && E.pass_rate_by_tier[t] != null) ? E.pass_rate_by_tier[t] : 1;
+}
+
 const TIER = val('--tier', '10k+');
 const ONLY = val('--platform', '');
 
@@ -92,7 +125,7 @@ if (FROM || TO) {
     console.error('Tiers are: ' + tiers.join(', '));
     process.exit(1);
   }
-  const adj = t => (E.pass_rate_by_tier && E.pass_rate_by_tier[t] != null) ? E.pass_rate_by_tier[t] : 1;
+  const adj = passAdj;
   const at = (t, k, bound) => E.platforms[k].tiers[t][bound];
 
   /* ------------------------------------------------------------------------
@@ -189,19 +222,20 @@ console.log('  ' + '·'.repeat(72));
 
 /* The tier multiplier is the whole reason the bottom of the distribution is
    not simply "more of the same". See pass_rate_by_tier in estimate.json. */
-const tierAdj = t => (E.pass_rate_by_tier && E.pass_rate_by_tier[t] != null) ? E.pass_rate_by_tier[t] : 1;
+const tierAdj = passAdj;
 
 let totLow = 0, totMid = 0, totHigh = 0;
 for (const [key, p] of platforms) {
-  const t = p.tiers[TIER];
-  const r = E.pass_rates[key];
-  const adj = tierAdj(TIER);
-  const low = t.low * r.low * adj, mid = t.mid * r.mid * adj, high = t.high * r.high * adj;
+  const exist = p.tiers[TIER].mid;
+  const low = cumulative(TIER, key, 'low', true, false);
+  const mid = cumulative(TIER, key, 'mid', true, false);
+  const high = cumulative(TIER, key, 'high', true, false);
   totLow += low; totMid += mid; totHigh += high;
 
   console.log('  ' + pad(p.label, 12) +
-    lpad(human(t.mid), 12) +
-    lpad(Math.round(r.mid * adj * 100) + '%', 12) +
+    lpad(human(exist), 12) +
+    /* the effective rate across the whole range, not one tier's multiplier */
+    lpad(Math.round((mid / exist) * 100) + '%', 12) +
     lpad(human(sig(mid)), 14) +
     '   ' + p.confidence);
 }
@@ -233,10 +267,9 @@ console.log('');
 console.log('  ' + pad('tier', 8) + platforms.map(([, p]) => lpad(p.label, 12)).join('') + lpad('total', 12));
 console.log('  ' + '·'.repeat(72));
 for (const t of tiers) {
-  const adj = tierAdj(t);
   let sum = 0;
-  const cells = platforms.map(([k, p]) => {
-    const v = p.tiers[t].mid * E.pass_rates[k].mid * adj;
+  const cells = platforms.map(([k]) => {
+    const v = cumulative(t, k, 'mid', true, false);
     sum += v;
     return lpad(human(sig(v)), 12);
   });
