@@ -1,0 +1,13 @@
+# Secrets. Never commit a real credential — the example file is the only one
+# that belongs in the repo.
+.env
+.env.*
+!.env.example
+
+node_modules/
+.DS_Store
+
+# The local slur list. Shipping one in a repository creates a slur list in a
+# repository; the filter loads this file when it is present and redacts
+# anything it matches out of the audit trail. See database/safety/rules.json.
+database/safety/slurs.local.txt

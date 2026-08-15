@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Channel database — NovaClip</title>
+<!--
+  Reads the database and nothing else. There is no credential on this page and
+  no request from it can return one: /api/database serves only channels that
+  passed the filter, and the review and rejected lists need the admin token,
+  which lives on the Worker.
+
+  If the Worker has nothing published yet, the page falls back to the built
+  file at database/data/channels.json so it still shows something real.
+-->
+<style>
+  :root{
+    --bg:#F6F8FC; --panel:#FFFFFF; --line:#E3E8F2; --txt:#0E1524; --dim:#5B6784;
+    --accent:#3B6CF6; --ok:#12855A; --warn:#B45309; --bad:#C0304A;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px rgba(16,24,40,.06);
+    --r:14px;
+  }
+  :root:not([data-theme="light"]){}
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#070A12; --panel:#0E1421; --line:#1E2839; --txt:#EAF1FF; --dim:#8895B0;
+      --accent:#6D9BFF; --ok:#35C08A; --warn:#E0A33B; --bad:#F0637E;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#070A12; --panel:#0E1421; --line:#1E2839; --txt:#EAF1FF; --dim:#8895B0;
+    --accent:#6D9BFF; --ok:#35C08A; --warn:#E0A33B; --bad:#F0637E;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 18px 70px}
+  a{color:var(--accent)}
+  h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:-.01em}
+  .sub{color:var(--dim);margin:0 0 22px;max-width:70ch}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+  .pad{padding:16px}
+
+  /* ---- connection ---- */
+  .conn{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  input,select{font:inherit;color:var(--txt);background:var(--panel);
+    border:1px solid var(--line);border-radius:10px;padding:9px 11px;min-width:0}
+  input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+  button{font:inherit;font-weight:600;color:#fff;background:var(--accent);border:0;
+    border-radius:10px;padding:9px 15px;cursor:pointer}
+  button.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);font-weight:500}
+  button:disabled{opacity:.55;cursor:default}
+  .grow{flex:1 1 320px}
+
+  /* ---- stats strip ---- */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+  .stat{padding:14px 16px}
+  .stat b{display:block;font-size:1.35rem;letter-spacing:-.02em}
+  .stat span{color:var(--dim);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
+
+  /* ---- filters ---- */
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+
+  /* ---- table ---- */
+  .scroll{overflow-x:auto;border-radius:var(--r)}
+  table{border-collapse:collapse;width:100%;min-width:860px;background:var(--panel)}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);
+    font-weight:600;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--panel)}
+  th.sorted::after{content:" ▾";color:var(--accent)}
+  th.asc::after{content:" ▴"}
+  tbody tr:hover{background:color-mix(in srgb,var(--accent) 7%,transparent)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .who{display:flex;align-items:center;gap:10px;white-space:normal;min-width:220px}
+  .who img{width:32px;height:32px;border-radius:50%;background:var(--line);flex:none}
+  .who small{display:block;color:var(--dim)}
+
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.74rem;font-weight:600;
+    border:1px solid var(--line);color:var(--dim)}
+  .pill.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+  .pill.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+
+  .empty{padding:40px 16px;text-align:center;color:var(--dim)}
+  .err{color:var(--bad)}
+  .foot{margin-top:16px;color:var(--dim);font-size:.85rem}
+  .foot code{background:color-mix(in srgb,var(--txt) 8%,transparent);padding:1px 6px;border-radius:6px}
+
+  @media (prefers-reduced-motion:no-preference){
+    tbody tr{transition:background .12s ease}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Channel database</h1>
+  <p class="sub">
+    Every channel here was measured through the platform's official API and passed the
+    safety rules in <code>database/safety/rules.json</code>. Channels that did not pass are not
+    in this list — they are in <code>rejected.json</code> with the rule that removed them,
+    which needs the admin token to read.
+  </p>
+
+  <div class="conn card pad">
+    <label class="grow">
+      <input id="url" class="grow" type="url" placeholder="https://novaclip-integrations.workers.dev" style="width:100%">
+    </label>
+    <button id="load">Load</button>
+    <button id="file" class="ghost">Use the built file</button>
+    <span id="conn-note" class="pill">not connected</span>
+  </div>
+
+  <div id="stats" class="stats" hidden></div>
+
+  <div class="filters">
+    <input id="q" type="search" placeholder="Search name, handle or description" class="grow">
+    <select id="platform"><option value="">All platforms</option></select>
+    <select id="niche"><option value="">All niches</option></select>
+    <select id="tier"><option value="">All tiers</option></select>
+    <select id="sort">
+      <option value="median_views">Median views</option>
+      <option value="followers">Followers</option>
+      <option value="engagement">Engagement rate</option>
+      <option value="uploads">Uploads (30d)</option>
+      <option value="views_per_follower">Views per follower</option>
+      <option value="total_views">Total views</option>
+      <option value="safety">Safety score</option>
+    </select>
+  </div>
+
+  <div class="scroll card">
+    <table>
+      <thead>
+        <tr>
+          <th data-sort="">Channel</th>
+          <th data-sort="followers" class="num">Followers</th>
+          <th data-sort="median_views" class="num sorted">Median</th>
+          <th data-sort="average_views" class="num">Mean</th>
+          <th data-sort="engagement" class="num">Engagement</th>
+          <th data-sort="uploads" class="num">30d</th>
+          <th data-sort="">Tier</th>
+          <th data-sort="">Niche</th>
+          <th data-sort="safety" class="num">Safety</th>
+        </tr>
+      </thead>
+      <tbody id="rows"><tr><td colspan="9" class="empty">Nothing loaded yet.</td></tr></tbody>
+    </table>
+  </div>
+
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var KEY = 'nc_integrations_url';
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { channels: [], total: 0, source: '', report: null };
+
+  /* Same rule as integrations.html: https anywhere, http only for loopback, so
+     a database address can never be a plain-text request to a real host. */
+  function base() {
+    var v = ($('url').value || '').trim().replace(/\/+$/, '');
+    if (!v) return '';
+    try {
+      var u = new URL(v);
+      var local = u.hostname === 'localhost' || u.hostname === '127.0.0.1' || u.hostname === '[::1]';
+      if (u.protocol === 'https:' || (u.protocol === 'http:' && local)) return u.origin;
+    } catch (e) {}
+    return '';
+  }
+
+  function note(text, cls) {
+    var el = $('conn-note');
+    el.textContent = text;
+    el.className = 'pill' + (cls ? ' ' + cls : '');
+  }
+
+  var nf = new Intl.NumberFormat();
+  function n(v) { return typeof v === 'number' ? nf.format(v) : '—'; }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
+
+  /* ---------- loading ---------- */
+
+  async function loadFromWorker() {
+    var b = base();
+    if (!b) { note('enter an https address', 'warn'); return; }
+    localStorage.setItem(KEY, b);
+    note('loading…');
+    try {
+      var r = await fetch(b + '/api/database?limit=200');
+      var body = await r.json();
+      if (!r.ok || !body.channels || !body.channels.length) {
+        note(body.error || 'nothing published', 'warn');
+        state.channels = []; state.total = 0;
+        render();
+        $('foot').innerHTML = body.fix ? 'Worker says: ' + esc(body.fix) : '';
+        return;
+      }
+      state.channels = body.channels;
+      state.total = body.total;
+      state.source = b;
+      note(body.total + ' channels', 'ok');
+      try {
+        var s = await fetch(b + '/api/database/stats');
+        state.report = (await s.json()).last_build || null;
+      } catch (e) { state.report = null; }
+      fill(); render();
+    } catch (e) {
+      note('could not reach it', 'warn');
+      $('foot').textContent = String(e.message || e);
+    }
+  }
+
+  /* The build writes this file, so the page is useful before anything is
+     deployed — and it is the same data the Worker would serve. */
+  async function loadFromFile() {
+    note('loading file…');
+    try {
+      var r = await fetch('database/data/channels.json');
+      if (!r.ok) throw new Error('database/data/channels.json not found — run node database/build.js');
+      var body = await r.json();
+      state.channels = body.channels || [];
+      state.total = state.channels.length;
+      state.source = 'database/data/channels.json';
+      try {
+        var rep = await fetch('database/data/build-report.json');
+        state.report = rep.ok ? await rep.json() : null;
+      } catch (e) { state.report = null; }
+      note(state.total + ' channels (built file)', 'ok');
+      fill(); render();
+    } catch (e) {
+      note('no built file', 'warn');
+      $('foot').textContent = String(e.message || e);
+    }
+  }
+
+  /* ---------- filtering, in the page, over what was loaded ---------- */
+
+  function fill() {
+    var seen = { platform: {}, niche: {}, tier: {} };
+    state.channels.forEach(function (c) {
+      ['platform', 'niche', 'tier'].forEach(function (k) {
+        if (c[k]) seen[k][c[k]] = (seen[k][c[k]] || 0) + 1;
+      });
+    });
+    ['platform', 'niche', 'tier'].forEach(function (k) {
+      var sel = $(k), keep = sel.value;
+      sel.length = 1;
+      Object.keys(seen[k]).sort().forEach(function (v) {
+        var o = document.createElement('option');
+        o.value = v; o.textContent = v + ' (' + seen[k][v] + ')';
+        sel.appendChild(o);
+      });
+      sel.value = keep;
+    });
+  }
+
+  var SORTS = {
+    followers: function (c) { return c.followers || 0; },
+    median_views: function (c) { return c.median_views || 0; },
+    average_views: function (c) { return c.average_views || 0; },
+    engagement: function (c) { return c.engagement_rate || 0; },
+    uploads: function (c) { return c.uploads_last_30_days || 0; },
+    views_per_follower: function (c) { return c.views_per_follower || 0; },
+    total_views: function (c) { return c.total_views || 0; },
+    safety: function (c) { return (c.safety && c.safety.safety_score) || 0; }
+  };
+  var sortKey = 'median_views', asc = false;
+
+  function render() {
+    var q = ($('q').value || '').trim().toLowerCase();
+    var rows = state.channels.filter(function (c) {
+      if ($('platform').value && c.platform !== $('platform').value) return false;
+      if ($('niche').value && c.niche !== $('niche').value) return false;
+      if ($('tier').value && c.tier !== $('tier').value) return false;
+      if (q) {
+        var hay = [c.display_name, c.username, c.title, c.description, c.niche].join(' ').toLowerCase();
+        if (hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    });
+
+    var pick = SORTS[sortKey] || SORTS.median_views;
+    rows.sort(function (a, b) { return (pick(a) - pick(b)) * (asc ? 1 : -1); });
+
+    var tb = $('rows');
+    if (!rows.length) {
+      tb.innerHTML = '<tr><td colspan="9" class="empty">' +
+        (state.channels.length ? 'Nothing matches those filters.' : 'Nothing loaded yet.') + '</td></tr>';
+    } else {
+      tb.innerHTML = rows.map(function (c) {
+        var s = c.safety || {};
+        var quality = (s.quality_flags || []).length
+          ? ' <span class="pill warn" title="quality flag, not a safety one">' + esc(s.quality_flags.join(', ')) + '</span>' : '';
+        return '<tr>' +
+          '<td><span class="who">' +
+            (c.avatar_url ? '<img src="' + esc(c.avatar_url) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '<img alt="">') +
+            '<span><a href="' + esc(c.profile_url || '#') + '" target="_blank" rel="noopener noreferrer">' +
+              esc(c.display_name || c.username) + '</a>' + quality +
+            '<small>' + esc(c.platform) + (c.username ? ' · ' + esc(c.username) : '') + '</small></span>' +
+          '</span></td>' +
+          '<td class="num">' + n(c.followers) + '</td>' +
+          '<td class="num">' + n(c.median_views) + '</td>' +
+          '<td class="num">' + n(c.average_views) + '</td>' +
+          '<td class="num">' + (c.engagement_rate != null ? c.engagement_rate + '%' : '—') + '</td>' +
+          '<td class="num">' + n(c.uploads_last_30_days) + '</td>' +
+          '<td><span class="pill">' + esc(c.tier || '—') + '</span></td>' +
+          '<td>' + esc(c.niche || '—') + '</td>' +
+          '<td class="num">' + (s.safety_score != null ? s.safety_score : '—') + '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    stats(rows);
+    foot(rows.length);
+  }
+
+  function stats(rows) {
+    var box = $('stats');
+    if (!state.channels.length) { box.hidden = true; return; }
+    box.hidden = false;
+    var followers = rows.reduce(function (a, c) { return a + (c.followers || 0); }, 0);
+    var views = rows.reduce(function (a, c) { return a + (c.total_views || 0); }, 0);
+    var eng = rows.map(function (c) { return c.engagement_rate || 0; }).filter(function (v) { return v > 0; }).sort(function (a, b) { return a - b; });
+    var medEng = eng.length ? (eng.length % 2 ? eng[(eng.length - 1) / 2] : (eng[eng.length / 2 - 1] + eng[eng.length / 2]) / 2) : 0;
+    var rep = state.report || {};
+
+    box.innerHTML = [
+      ['Channels', n(rows.length)],
+      ['Followers', n(followers)],
+      ['Views', n(views)],
+      ['Median engagement', (Math.round(medEng * 100) / 100) + '%'],
+      ['Removed by the filter', rep.rejected != null ? n(rep.rejected) : '—'],
+      ['Awaiting review', rep.needs_review != null ? n(rep.needs_review) : '—']
+    ].map(function (p) {
+      return '<div class="stat card"><b>' + p[1] + '</b><span>' + p[0] + '</span></div>';
+    }).join('');
+  }
+
+  function foot(shown) {
+    var rep = state.report || {};
+    var bits = [];
+    if (state.source) bits.push('Source: <code>' + esc(state.source) + '</code>');
+    if (rep.built_at) bits.push('built ' + esc(String(rep.built_at).slice(0, 16).replace('T', ' ')));
+    if (rep.rules_version) bits.push('rules v' + esc(rep.rules_version));
+    if (rep.offline) bits.push('<b>fixtures, not measurements</b>');
+    if (rep.youtube_quota_units != null) bits.push(rep.youtube_quota_units + ' quota units spent');
+    bits.push('showing ' + shown + ' of ' + state.channels.length);
+    $('foot').innerHTML = bits.join(' · ');
+  }
+
+  /* ---------- wiring ---------- */
+
+  $('load').addEventListener('click', loadFromWorker);
+  $('file').addEventListener('click', loadFromFile);
+  ['q', 'platform', 'niche', 'tier'].forEach(function (id) {
+    $(id).addEventListener('input', render);
+    $(id).addEventListener('change', render);
+  });
+  $('sort').addEventListener('change', function () { sortKey = this.value; asc = false; marks(); render(); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('th[data-sort]'), function (th) {
+    if (!th.dataset.sort) return;
+    th.addEventListener('click', function () {
+      if (sortKey === th.dataset.sort) asc = !asc;
+      else { sortKey = th.dataset.sort; asc = false; }
+      $('sort').value = SORTS[sortKey] ? sortKey : $('sort').value;
+      marks(); render();
+    });
+  });
+
+  function marks() {
+    Array.prototype.forEach.call(document.querySelectorAll('th[data-sort]'), function (th) {
+      th.classList.toggle('sorted', th.dataset.sort === sortKey);
+      th.classList.toggle('asc', th.dataset.sort === sortKey && asc);
+    });
+  }
+
+  $('url').value = localStorage.getItem(KEY) || '';
+  marks();
+  /* Try the built file first so the page is never empty on arrival; the Load
+     button is there for when the Worker is the source of truth. */
+  loadFromFile().then(function () { if (!state.channels.length && $('url').value) loadFromWorker(); });
+})();
+</script>
+</body>
+</html>

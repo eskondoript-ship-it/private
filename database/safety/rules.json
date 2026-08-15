@@ -1,0 +1,314 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-08-15",
+  "audience": {
+    "profile": "teen-safe",
+    "min_age": 13,
+    "note": "NovaClip's stated audience is 13-18, so the default profile removes anything an adult platform would gate behind an age check, not only what is illegal."
+  },
+
+  "_readme": [
+    "This file is the whole policy. filter.js contains no opinions of its own —",
+    "it only executes what is written here, which means a disagreement about",
+    "what counts as bad content is settled by editing JSON rather than code,",
+    "and every rejection can be traced to a line in this file.",
+    "",
+    "Slurs are deliberately NOT enumerated here. Shipping a slur list in a repo",
+    "creates a slur list in a repo. Put one in database/safety/slurs.local.txt",
+    "(one term per line, gitignored) and the filter loads it if it exists.",
+    "Terms from that file are matched but never echoed back in the audit trail."
+  ],
+
+  "field_weights": {
+    "channel_title": 1.0,
+    "channel_description": 1.0,
+    "channel_keywords": 0.8,
+    "video_title": 0.6,
+    "video_description": 0.4,
+    "video_tags": 0.4
+  },
+
+  "thresholds": {
+    "review_at": 1.8,
+    "block_at": 5.0,
+    "flagged_ratio_review": 0.15,
+    "flagged_ratio_block": 0.35,
+    "ratio_bonus_review": 1.5,
+    "ratio_bonus_block": 3.0,
+    "context_relief": 2.0,
+    "_note": [
+      "The numbers are chosen so that a single match in one video title can never",
+      "block a channel on its own: the worst case is severity 5 x 0.6 = 3.0, which",
+      "lands in review. Blocking on text needs the term in the channel's own",
+      "identity, two independent categories, or a pattern across many uploads.",
+      "",
+      "review_at is 1.8 so that the weakest safety category (severity 3) matching",
+      "one video title still reaches a human. The blackout challenge showing up",
+      "once in one title is worth thirty seconds of someone's attention."
+    ]
+  },
+
+  "hard_signals": [
+    {
+      "id": "youtube_age_restricted",
+      "label": "YouTube age-restricted uploads",
+      "source": "videos.contentDetails.contentRating.ytRating == ytAgeRestricted",
+      "score": 4.0,
+      "block_if_ratio_over": 0.15,
+      "note": "One age-restricted video is a review. A steady pattern is the channel's normal output."
+    },
+    {
+      "id": "twitch_mature",
+      "label": "Twitch channel flagged mature",
+      "source": "streams.is_mature / channel.content_classification_labels",
+      "score": 5.0,
+      "note": "Self-declared 18+. Under a teen-safe profile that is a block by itself, and it is the creator's own declaration rather than a guess."
+    },
+    {
+      "id": "twitch_ccl_restricted",
+      "label": "Twitch content classification label",
+      "source": "channel.content_classification_labels",
+      "values": ["DrugsIntoxication", "SexualThemes", "ViolentGraphic", "Gambling"],
+      "score": 5.0
+    },
+    {
+      "id": "youtube_topic_restricted",
+      "label": "YouTube topic category",
+      "source": "channels.topicDetails.topicCategories",
+      "values": ["Gambling"],
+      "score": 3.0,
+      "note": "topicCategories are Wikipedia URLs assigned by YouTube, not by the creator, so they are hard to game — but they are coarse, which is why the score is a review rather than a block."
+    }
+  ],
+
+  "context_exemptions": {
+    "note": "A history channel says 'war', a news channel says 'cartel', a medical channel says 'overdose'. Categories marked context_sensitive lose `context_relief` severity when the channel itself is clearly one of these.",
+    "topics": [
+      "https://en.wikipedia.org/wiki/Knowledge",
+      "https://en.wikipedia.org/wiki/Health",
+      "https://en.wikipedia.org/wiki/Society",
+      "https://en.wikipedia.org/wiki/Politics"
+    ],
+    "terms": [
+      "news", "documentary", "documentaries", "history", "historian", "education",
+      "educational", "explained", "journalism", "investigative", "science",
+      "academy", "university", "museum", "archive", "public health", "medical",
+      "lecture", "course", "textbook", "curriculum", "analysis", "research"
+    ]
+  },
+
+  "categories": [
+    {
+      "id": "adult",
+      "label": "Sexual content",
+      "severity": 5,
+      "context_sensitive": false,
+      "deleet": true,
+      "terms": [
+        "porn", "pornhub", "xvideos", "onlyfans", "fansly", "nsfw", "xxx",
+        "camgirl", "cam girl", "webcam model", "hentai", "rule 34",
+        "escort service", "sex tape", "sex work", "adult film", "adult star",
+        "strip club", "stripper", "lingerie haul", "nude", "nudes", "erotic",
+        "fetish", "hookup app", "sugar daddy", "sugar baby"
+      ],
+      "exemptions": [
+        "sex education", "sexual health", "consent education", "puberty",
+        "anti trafficking", "safeguarding", "body positivity", "medical anatomy"
+      ]
+    },
+    {
+      "id": "self_harm",
+      "label": "Self-harm and eating disorders",
+      "severity": 5,
+      "context_sensitive": false,
+      "deleet": true,
+      "terms": [
+        "pro ana", "proana", "pro mia", "thinspo", "thinspiration", "bonespo",
+        "self harm", "selfharm", "cutting myself", "how to starve",
+        "starvation diet", "suicide method", "how to kill myself", "kys",
+        "unalive myself", "ana coach", "meanspo"
+      ],
+      "exemptions": [
+        "suicide prevention", "suicide hotline", "crisis line", "recovery",
+        "eating disorder recovery", "get help", "mental health support",
+        "therapy", "988", "samaritans", "warning signs"
+      ]
+    },
+    {
+      "id": "hate",
+      "label": "Hate and extremism",
+      "severity": 5,
+      "context_sensitive": true,
+      "deleet": true,
+      "terms": [
+        "white power", "white genocide", "race war", "racial superiority",
+        "heil hitler", "sieg heil", "holocaust hoax", "holocaust denial",
+        "great replacement", "gas the", "deport them all", "master race",
+        "jihad recruitment", "terror propaganda", "kill all",
+        "subhuman", "untermensch", "ethnostate", "blood and soil",
+        "1488", "groyper", "accelerationist manifesto"
+      ],
+      "exemptions": [
+        "against racism", "anti racism", "condemn", "debunk", "debunked",
+        "holocaust education", "holocaust memorial", "survivor testimony",
+        "extremism research", "counter extremism", "deradicalisation",
+        "deradicalization", "hate speech policy", "civil rights"
+      ],
+      "external_terms_file": "slurs.local.txt",
+      "redact_external": true
+    },
+    {
+      "id": "graphic_violence",
+      "label": "Graphic violence and shock content",
+      "severity": 4,
+      "context_sensitive": true,
+      "deleet": true,
+      "terms": [
+        "gore", "gorey", "beheading", "decapitation video", "execution video",
+        "real death", "died on camera", "death compilation", "snuff",
+        "liveleak", "bestgore", "watchpeopledie", "brutal killing",
+        "cartel video", "torture video", "crime scene footage", "shock video"
+      ],
+      "exemptions": [
+        "war documentary", "conflict reporting", "forensic", "first aid",
+        "trauma surgery", "special effects", "prosthetic makeup", "sfx makeup",
+        "movie review", "horror movie", "game review", "gameplay"
+      ]
+    },
+    {
+      "id": "weapons",
+      "label": "Weapon manufacture and sourcing",
+      "severity": 4,
+      "context_sensitive": true,
+      "deleet": false,
+      "note": "Deliberately narrow. 'Gun' appears in every shooter game on the platform; only making, converting or sourcing real weapons is scored.",
+      "terms": [
+        "ghost gun", "3d printed gun", "3d printed firearm", "auto sear",
+        "glock switch", "full auto conversion", "how to make a gun",
+        "how to make a silencer", "homemade suppressor", "buy ammo online",
+        "untraceable firearm", "how to make a bomb", "pipe bomb",
+        "improvised explosive", "napalm recipe", "thermite recipe"
+      ],
+      "exemptions": [
+        "airsoft", "nerf", "paintball", "video game", "gameplay", "warzone",
+        "call of duty", "counter strike", "museum", "reenactment", "history of"
+      ]
+    },
+    {
+      "id": "drugs",
+      "label": "Drug sourcing and promotion",
+      "severity": 3,
+      "context_sensitive": true,
+      "deleet": true,
+      "terms": [
+        "how to make meth", "cook meth", "buy drugs online", "drug plug",
+        "dark web drugs", "cocaine haul", "lean recipe", "how to get high",
+        "vape haul", "nic haul", "buy weed online", "grow guide indica",
+        "steroid cycle", "sarms cycle", "buy xanax", "pill press", "shrooms grow"
+      ],
+      "exemptions": [
+        "addiction recovery", "harm reduction", "sober", "rehab", "overdose prevention",
+        "drug policy", "pharmacology", "public health", "narcotics anonymous",
+        "documentary", "dangers of", "quit vaping"
+      ]
+    },
+    {
+      "id": "gambling",
+      "label": "Gambling promotion",
+      "severity": 3,
+      "context_sensitive": false,
+      "deleet": false,
+      "note": "Scored because the audience is 13-18 and skin gambling is aimed squarely at them.",
+      "terms": [
+        "csgo gambling", "cs2 gambling", "case opening promo", "skin gambling",
+        "crypto casino", "online casino bonus", "free spins code", "deposit bonus code",
+        "betting tips", "sure bet", "fixed matches", "roulette strategy",
+        "slots big win", "stake code", "use my promo code casino", "aviator predictor"
+      ],
+      "exemptions": [
+        "gambling addiction", "problem gambling", "expose", "exposed", "scam warning",
+        "documentary", "regulation", "gamstop"
+      ]
+    },
+    {
+      "id": "scams",
+      "label": "Scams, generators and account theft",
+      "severity": 4,
+      "context_sensitive": false,
+      "deleet": true,
+      "note": "The single most common thing aimed at this age group.",
+      "terms": [
+        "free robux", "robux generator", "free v bucks", "v bucks generator",
+        "free nitro generator", "free gift card generator", "roblox hack",
+        "account hack", "hack any account", "password cracker download",
+        "double your bitcoin", "crypto doubler", "send 1 receive 2",
+        "guaranteed profit", "risk free money", "money glitch", "cash app glitch",
+        "bank glitch", "get rich quick", "mod menu download", "aimbot download",
+        "free followers generator", "click the link to claim"
+      ],
+      "exemptions": [
+        "scam", "scams", "scammer", "exposed", "expose", "warning", "avoid",
+        "debunk", "debunked", "how they work", "fraud awareness", "do not fall for"
+      ],
+      "exemption_note": "The word 'scam' in a title is far more often a warning video than a scam, so a scam-awareness channel is not punished for naming the thing it warns about."
+    },
+    {
+      "id": "dangerous_stunts",
+      "label": "Dangerous challenges and harmful pranks",
+      "severity": 3,
+      "context_sensitive": false,
+      "deleet": false,
+      "terms": [
+        "do not try this", "almost died challenge", "blackout challenge",
+        "choking challenge", "tide pod", "fire challenge", "car surfing",
+        "subway surfing", "train surfing", "rooftopping no safety",
+        "fake kidnapping prank", "prank gone wrong", "public harassment prank",
+        "scaring strangers", "prank in the hood"
+      ],
+      "exemptions": [
+        "warning", "dangers of", "documentary", "news report", "expose",
+        "safety", "stunt professional", "trained stunt", "closed course"
+      ]
+    },
+    {
+      "id": "health_misinformation",
+      "label": "Medical misinformation",
+      "severity": 3,
+      "context_sensitive": true,
+      "deleet": false,
+      "terms": [
+        "miracle cure", "cures cancer", "cure cancer naturally", "big pharma hiding",
+        "vaccines cause autism", "anti vax", "detox parasites", "black salve",
+        "bleach cure", "miracle mineral solution", "colloidal silver cure",
+        "do not take your medication", "essential oils cure"
+      ],
+      "exemptions": [
+        "debunk", "debunked", "myth", "myths", "fact check", "misinformation",
+        "why this is false", "doctor reacts", "evidence"
+      ]
+    },
+    {
+      "id": "engagement_bait",
+      "label": "Engagement bait and spam",
+      "kind": "quality",
+      "severity": 2,
+      "context_sensitive": false,
+      "deleet": false,
+      "note": "kind:quality, so it is recorded on the row and never touches the verdict. Bait is annoying, not unsafe, and the first version of this file blocked a channel purely for saying sub4sub a lot — which is how a safety filter quietly turns into a taste filter.",
+      "terms": [
+        "sub4sub", "sub for sub", "s4s", "like and subscribe to win",
+        "comment to enter giveaway send", "first 100 subscribers get",
+        "you won click here", "viral fyp trending foryou", "tags ignore",
+        "watch till the end you wont believe", "gone wrong gone sexual",
+        "3am challenge gone wrong"
+      ],
+      "exemptions": []
+    }
+  ],
+
+  "overrides": {
+    "_note": "Human decisions, and they win over every score above. Both lists take a `platform:id` key so an id can never collide across platforms.",
+    "allow": [],
+    "block": []
+  }
+}

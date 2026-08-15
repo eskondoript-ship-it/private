@@ -1,0 +1,259 @@
+[
+  {
+    "_case": "an ordinary education channel — nothing fires",
+    "raw": {
+      "platform": "youtube", "id": "FIX_clean_education", "username": "@fixture-maths",
+      "display_name": "Fixture Maths", "followers": 840000, "total_views": 91000000,
+      "total_content": 310, "country": "GB", "niche": "education",
+      "videos": [
+        { "views": 220000, "likes": 14000, "comments": 900, "published_at": "2026-08-01T10:00:00Z" },
+        { "views": 190000, "likes": 12000, "comments": 700, "published_at": "2026-07-20T10:00:00Z" },
+        { "views": 260000, "likes": 15000, "comments": 1100, "published_at": "2026-07-04T10:00:00Z" }
+      ]
+    },
+    "safetyInput": {
+      "platform": "youtube", "id": "FIX_clean_education",
+      "title": "Fixture Maths",
+      "description": "Visual explanations of linear algebra and probability for secondary school students.",
+      "keywords": ["maths", "education", "linear algebra"],
+      "topics": ["https://en.wikipedia.org/wiki/Knowledge"],
+      "videos": [
+        { "title": "Why matrices multiply the way they do", "description": "", "tags": ["maths"], "age_restricted": false },
+        { "title": "Bayes' theorem, drawn", "description": "", "tags": ["probability"], "age_restricted": false },
+        { "title": "Eigenvectors explained", "description": "", "tags": [], "age_restricted": false }
+      ],
+      "flags": {}
+    }
+  },
+
+  {
+    "_case": "a scam-awareness channel — says 'free robux' in every title and is exempted for it",
+    "raw": {
+      "platform": "youtube", "id": "FIX_scam_awareness", "username": "@fixture-warnings",
+      "display_name": "Fixture Warnings", "followers": 120000, "total_views": 8000000,
+      "total_content": 90, "niche": "creator-education",
+      "videos": [
+        { "views": 60000, "likes": 4000, "comments": 500, "published_at": "2026-08-05T10:00:00Z" },
+        { "views": 55000, "likes": 3800, "comments": 420, "published_at": "2026-07-25T10:00:00Z" }
+      ]
+    },
+    "safetyInput": {
+      "platform": "youtube", "id": "FIX_scam_awareness",
+      "title": "Fixture Warnings",
+      "description": "We expose scams aimed at younger players and explain how to avoid them.",
+      "keywords": ["scam awareness", "online safety"],
+      "topics": ["https://en.wikipedia.org/wiki/Knowledge"],
+      "videos": [
+        { "title": "How the free robux scam actually works — do not fall for it", "description": "A warning about generators.", "tags": ["safety"], "age_restricted": false },
+        { "title": "Free v bucks generator sites exposed", "description": "Every one of these is a scam.", "tags": ["safety"], "age_restricted": false }
+      ],
+      "flags": {}
+    }
+  },
+
+  {
+    "_case": "an actual generator channel — same words, no exemption, removed",
+    "raw": {
+      "platform": "youtube", "id": "FIX_generator", "username": "@fixture-generator",
+      "display_name": "FREE ROBUX GENERATOR 2026", "followers": 4000, "total_views": 210000,
+      "total_content": 40, "niche": "gaming",
+      "videos": [
+        { "views": 9000, "likes": 40, "comments": 3, "published_at": "2026-08-10T10:00:00Z" },
+        { "views": 7000, "likes": 30, "comments": 2, "published_at": "2026-08-08T10:00:00Z" }
+      ]
+    },
+    "safetyInput": {
+      "platform": "youtube", "id": "FIX_generator",
+      "title": "FREE ROBUX GENERATOR 2026",
+      "description": "Working robux generator, no human verification. Click the link to claim your free robux now!",
+      "keywords": ["free robux", "robux generator", "roblox hack"],
+      "topics": [],
+      "videos": [
+        { "title": "FREE ROBUX GENERATOR working 2026", "description": "click the link to claim", "tags": ["free robux"], "age_restricted": false },
+        { "title": "Roblox hack unlimited robux", "description": "", "tags": ["roblox hack"], "age_restricted": false }
+      ],
+      "flags": {}
+    }
+  },
+
+  {
+    "_case": "a history channel — says the words a hate filter watches for, and keeps its place",
+    "raw": {
+      "platform": "youtube", "id": "FIX_history", "username": "@fixture-history",
+      "display_name": "Fixture History", "followers": 610000, "total_views": 54000000,
+      "total_content": 180, "niche": "education",
+      "videos": [
+        { "views": 300000, "likes": 20000, "comments": 2400, "published_at": "2026-08-02T10:00:00Z" },
+        { "views": 280000, "likes": 19000, "comments": 2100, "published_at": "2026-07-12T10:00:00Z" }
+      ]
+    },
+    "safetyInput": {
+      "platform": "youtube", "id": "FIX_history",
+      "title": "Fixture History",
+      "description": "A documentary history channel. Long-form analysis of the twentieth century, sourced and cited.",
+      "keywords": ["history", "documentary", "second world war"],
+      "topics": ["https://en.wikipedia.org/wiki/Knowledge", "https://en.wikipedia.org/wiki/Society"],
+      "videos": [
+        { "title": "Holocaust denial and why it persists — debunked", "description": "Holocaust education, survivor testimony and the historical record.", "tags": ["history"], "age_restricted": false },
+        { "title": "The Nuremberg trials, day by day", "description": "", "tags": ["history"], "age_restricted": false }
+      ],
+      "flags": {}
+    }
+  },
+
+  {
+    "_case": "skin gambling aimed at the exact age group this database serves",
+    "raw": {
+      "platform": "youtube", "id": "FIX_gambling", "username": "@fixture-cases",
+      "display_name": "Case Opening Daily", "followers": 300000, "total_views": 40000000,
+      "total_content": 500, "niche": "gaming",
+      "videos": [
+        { "views": 80000, "likes": 3000, "comments": 400, "published_at": "2026-08-11T10:00:00Z" },
+        { "views": 90000, "likes": 3400, "comments": 380, "published_at": "2026-08-09T10:00:00Z" }
+      ]
+    },
+    "safetyInput": {
+      "platform": "youtube", "id": "FIX_gambling",
+      "title": "Case Opening Daily",
+      "description": "Daily cs2 gambling and case opening. Use my promo code casino for a deposit bonus code and free spins code!",
+      "keywords": ["skin gambling", "crypto casino"],
+      "topics": ["https://en.wikipedia.org/wiki/Gambling"],
+      "videos": [
+        { "title": "$10,000 skin gambling session", "description": "stake code below", "tags": ["gambling"], "age_restricted": false },
+        { "title": "Aviator predictor actually works?", "description": "", "tags": [], "age_restricted": false }
+      ],
+      "flags": {}
+    }
+  },
+
+  {
+    "_case": "a Twitch channel that declares itself mature — its own declaration, not a guess",
+    "raw": {
+      "platform": "twitch", "id": "FIX_twitch_mature", "username": "fixture_mature",
+      "display_name": "fixture_mature", "followers": 2100000, "total_views": 9000000,
+      "total_content": 20, "niche": "gaming",
+      "videos": [
+        { "views": 400000, "published_at": "2026-08-13T10:00:00Z" },
+        { "views": 380000, "published_at": "2026-08-12T10:00:00Z" }
+      ]
+    },
+    "safetyInput": {
+      "platform": "twitch", "id": "FIX_twitch_mature",
+      "title": "fixture_mature", "description": "just chatting and games",
+      "keywords": ["English"], "topics": [],
+      "videos": [
+        { "title": "late night stream", "description": "", "tags": [], "age_restricted": false }
+      ],
+      "flags": { "twitch_mature": true, "twitch_labels": ["SexualThemes"] }
+    }
+  },
+
+  {
+    "_case": "age-restricted uploads as a pattern, not an accident",
+    "raw": {
+      "platform": "youtube", "id": "FIX_age_restricted", "username": "@fixture-restricted",
+      "display_name": "Fixture Restricted", "followers": 50000, "total_views": 3000000,
+      "total_content": 60, "niche": "film",
+      "videos": [
+        { "views": 40000, "likes": 900, "comments": 60, "published_at": "2026-08-06T10:00:00Z" },
+        { "views": 38000, "likes": 800, "comments": 55, "published_at": "2026-08-03T10:00:00Z" },
+        { "views": 42000, "likes": 850, "comments": 70, "published_at": "2026-07-30T10:00:00Z" },
+        { "views": 39000, "likes": 810, "comments": 58, "published_at": "2026-07-28T10:00:00Z" }
+      ]
+    },
+    "safetyInput": {
+      "platform": "youtube", "id": "FIX_age_restricted",
+      "title": "Fixture Restricted", "description": "Short films.",
+      "keywords": [], "topics": [],
+      "videos": [
+        { "title": "Short film one", "description": "", "tags": [], "age_restricted": true },
+        { "title": "Short film two", "description": "", "tags": [], "age_restricted": true },
+        { "title": "Short film three", "description": "", "tags": [], "age_restricted": false },
+        { "title": "Short film four", "description": "", "tags": [], "age_restricted": false }
+      ],
+      "flags": {}
+    }
+  },
+
+  {
+    "_case": "one bad video title on an otherwise normal channel — a review, never a removal",
+    "raw": {
+      "platform": "youtube", "id": "FIX_one_slip", "username": "@fixture-vlogs",
+      "display_name": "Fixture Vlogs", "followers": 90000, "total_views": 6000000,
+      "total_content": 220, "niche": "creator-education",
+      "videos": [
+        { "views": 20000, "likes": 900, "comments": 80, "published_at": "2026-08-07T10:00:00Z" },
+        { "views": 22000, "likes": 950, "comments": 90, "published_at": "2026-08-04T10:00:00Z" },
+        { "views": 21000, "likes": 930, "comments": 85, "published_at": "2026-08-01T10:00:00Z" },
+        { "views": 19000, "likes": 880, "comments": 75, "published_at": "2026-07-29T10:00:00Z" },
+        { "views": 23000, "likes": 990, "comments": 95, "published_at": "2026-07-26T10:00:00Z" },
+        { "views": 20500, "likes": 910, "comments": 82, "published_at": "2026-07-23T10:00:00Z" },
+        { "views": 21500, "likes": 940, "comments": 88, "published_at": "2026-07-20T10:00:00Z" }
+      ]
+    },
+    "safetyInput": {
+      "platform": "youtube", "id": "FIX_one_slip",
+      "title": "Fixture Vlogs", "description": "Weekly vlogs about making things.",
+      "keywords": ["vlog"], "topics": [],
+      "videos": [
+        { "title": "my week in the studio", "description": "", "tags": [], "age_restricted": false },
+        { "title": "we tried the blackout challenge trend", "description": "", "tags": [], "age_restricted": false },
+        { "title": "camera setup tour", "description": "", "tags": [], "age_restricted": false },
+        { "title": "editing all night", "description": "", "tags": [], "age_restricted": false },
+        { "title": "q and a", "description": "", "tags": [], "age_restricted": false },
+        { "title": "studio build day two", "description": "", "tags": [], "age_restricted": false },
+        { "title": "how I plan a video", "description": "", "tags": [], "age_restricted": false }
+      ],
+      "flags": {}
+    }
+  },
+
+  {
+    "_case": "a mental health channel — the vocabulary of the thing it prevents",
+    "raw": {
+      "platform": "youtube", "id": "FIX_mental_health", "username": "@fixture-support",
+      "display_name": "Fixture Support", "followers": 210000, "total_views": 12000000,
+      "total_content": 140, "niche": "education",
+      "videos": [
+        { "views": 45000, "likes": 3000, "comments": 600, "published_at": "2026-08-08T10:00:00Z" },
+        { "views": 47000, "likes": 3100, "comments": 640, "published_at": "2026-07-31T10:00:00Z" }
+      ]
+    },
+    "safetyInput": {
+      "platform": "youtube", "id": "FIX_mental_health",
+      "title": "Fixture Support",
+      "description": "Mental health support for teenagers, made with clinical psychologists.",
+      "keywords": ["mental health", "education"],
+      "topics": ["https://en.wikipedia.org/wiki/Health"],
+      "videos": [
+        { "title": "Suicide prevention: the warning signs to know", "description": "If you are struggling, a crisis line is listed below.", "tags": ["mental health"], "age_restricted": false },
+        { "title": "Eating disorder recovery, one year on", "description": "Talking about pro ana content and why it is dangerous. Get help.", "tags": [], "age_restricted": false }
+      ],
+      "flags": {}
+    }
+  },
+
+  {
+    "_case": "engagement bait — a quality problem, and never on its own a safety one",
+    "raw": {
+      "platform": "youtube", "id": "FIX_bait", "username": "@fixture-bait",
+      "display_name": "Fixture Bait", "followers": 15000, "total_views": 900000,
+      "total_content": 400, "niche": "gaming",
+      "videos": [
+        { "views": 2000, "likes": 40, "comments": 5, "published_at": "2026-08-12T10:00:00Z" },
+        { "views": 2200, "likes": 45, "comments": 6, "published_at": "2026-08-11T10:00:00Z" }
+      ]
+    },
+    "safetyInput": {
+      "platform": "youtube", "id": "FIX_bait",
+      "title": "Fixture Bait", "description": "sub4sub always! like and subscribe to win",
+      "keywords": ["viral fyp trending foryou"],
+      "topics": [],
+      "videos": [
+        { "title": "watch till the end you wont believe", "description": "", "tags": [], "age_restricted": false },
+        { "title": "gaming montage", "description": "", "tags": [], "age_restricted": false }
+      ],
+      "flags": {}
+    }
+  }
+]

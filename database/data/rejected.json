@@ -1,0 +1,421 @@
+{
+  "built_at": "2026-08-15T11:11:15.975Z",
+  "count": 4,
+  "channels": [
+    {
+      "platform": "youtube",
+      "platform_creator_id": "FIX_generator",
+      "username": "@fixture-generator",
+      "display_name": "FREE ROBUX GENERATOR 2026",
+      "profile_url": "",
+      "avatar_url": "",
+      "followers": 4000,
+      "following": 0,
+      "total_views": 210000,
+      "total_content": 40,
+      "average_views": 8000,
+      "median_views": 8000,
+      "average_likes": 35,
+      "average_comments": 3,
+      "average_shares": 0,
+      "median_likes": 35,
+      "median_comments": 3,
+      "median_shares": 0,
+      "engagement_rate": 0.48,
+      "views_per_follower": 2,
+      "uploads_last_30_days": 2,
+      "country": "",
+      "language": "",
+      "niche": "gaming",
+      "verified": false,
+      "tier": "Nano",
+      "data_source": "demo",
+      "data_confidence": 0.68,
+      "unavailable": [],
+      "sample_size": 2,
+      "last_updated": "2026-08-15T11:11:15.921Z",
+      "demo": true,
+      "title": "FREE ROBUX GENERATOR 2026",
+      "description": "Working robux generator, no human verification. Click the link to claim your free robux now!",
+      "topics": [],
+      "safety": {
+        "verdict": "block",
+        "safety_score": 16,
+        "quality_flags": [],
+        "risk_score": 7,
+        "categories": [
+          "scams"
+        ],
+        "flagged_upload_ratio": 1,
+        "rules_version": "1.0.0",
+        "reasons": [
+          {
+            "rule": "category:scams",
+            "field": "channel_title",
+            "video": null,
+            "matched": [
+              "free robux",
+              "robux generator"
+            ],
+            "severity": 4,
+            "base_severity": 4,
+            "context_relief": false,
+            "weight": 1,
+            "contribution": 4
+          },
+          {
+            "rule": "category:scams",
+            "field": "channel_description",
+            "video": null,
+            "matched": [
+              "free robux",
+              "robux generator",
+              "click the link to claim"
+            ],
+            "severity": 4,
+            "base_severity": 4,
+            "context_relief": false,
+            "weight": 1,
+            "contribution": 4
+          },
+          {
+            "rule": "category:scams",
+            "field": "channel_keywords",
+            "video": null,
+            "matched": [
+              "free robux",
+              "robux generator",
+              "roblox hack"
+            ],
+            "severity": 4,
+            "base_severity": 4,
+            "context_relief": false,
+            "weight": 0.8,
+            "contribution": 3.2
+          },
+          {
+            "rule": "category:scams",
+            "field": "video_title",
+            "video": 0,
+            "matched": [
+              "free robux",
+              "robux generator"
+            ],
+            "severity": 4,
+            "base_severity": 4,
+            "context_relief": false,
+            "weight": 0.6,
+            "contribution": 2.4
+          },
+          {
+            "rule": "category:scams",
+            "field": "video_description",
+            "video": 0,
+            "matched": [
+              "click the link to claim"
+            ],
+            "severity": 4,
+            "base_severity": 4,
+            "context_relief": false,
+            "weight": 0.4,
+            "contribution": 1.6
+          },
+          {
+            "rule": "category:scams",
+            "field": "video_tags",
+            "video": 0,
+            "matched": [
+              "free robux"
+            ],
+            "severity": 4,
+            "base_severity": 4,
+            "context_relief": false,
+            "weight": 0.4,
+            "contribution": 1.6
+          },
+          {
+            "rule": "category:scams",
+            "field": "video_title",
+            "video": 1,
+            "matched": [
+              "roblox hack"
+            ],
+            "severity": 4,
+            "base_severity": 4,
+            "context_relief": false,
+            "weight": 0.6,
+            "contribution": 2.4
+          },
+          {
+            "rule": "category:scams",
+            "field": "video_tags",
+            "video": 1,
+            "matched": [
+              "roblox hack"
+            ],
+            "severity": 4,
+            "base_severity": 4,
+            "context_relief": false,
+            "weight": 0.4,
+            "contribution": 1.6
+          },
+          {
+            "rule": "pattern:flagged_ratio",
+            "detail": "100% of recent uploads matched a category",
+            "contribution": 3
+          }
+        ]
+      }
+    },
+    {
+      "platform": "youtube",
+      "platform_creator_id": "FIX_gambling",
+      "username": "@fixture-cases",
+      "display_name": "Case Opening Daily",
+      "profile_url": "",
+      "avatar_url": "",
+      "followers": 300000,
+      "following": 0,
+      "total_views": 40000000,
+      "total_content": 500,
+      "average_views": 85000,
+      "median_views": 85000,
+      "average_likes": 3200,
+      "average_comments": 390,
+      "average_shares": 0,
+      "median_likes": 3200,
+      "median_comments": 390,
+      "median_shares": 0,
+      "engagement_rate": 4.22,
+      "views_per_follower": 0.28,
+      "uploads_last_30_days": 2,
+      "country": "",
+      "language": "",
+      "niche": "gaming",
+      "verified": false,
+      "tier": "Macro",
+      "data_source": "demo",
+      "data_confidence": 0.68,
+      "unavailable": [],
+      "sample_size": 2,
+      "last_updated": "2026-08-15T11:11:15.952Z",
+      "demo": true,
+      "title": "Case Opening Daily",
+      "description": "Daily cs2 gambling and case opening. Use my promo code casino for a deposit bonus code and free spins code!",
+      "topics": [
+        "https://en.wikipedia.org/wiki/Gambling"
+      ],
+      "safety": {
+        "verdict": "block",
+        "safety_score": 0,
+        "quality_flags": [],
+        "risk_score": 9,
+        "categories": [
+          "gambling"
+        ],
+        "flagged_upload_ratio": 1,
+        "rules_version": "1.0.0",
+        "reasons": [
+          {
+            "rule": "category:gambling",
+            "field": "channel_description",
+            "video": null,
+            "matched": [
+              "cs2 gambling",
+              "free spins code",
+              "deposit bonus code",
+              "use my promo code casino"
+            ],
+            "severity": 3,
+            "base_severity": 3,
+            "context_relief": false,
+            "weight": 1,
+            "contribution": 3
+          },
+          {
+            "rule": "category:gambling",
+            "field": "channel_keywords",
+            "video": null,
+            "matched": [
+              "skin gambling",
+              "crypto casino"
+            ],
+            "severity": 3,
+            "base_severity": 3,
+            "context_relief": false,
+            "weight": 0.8,
+            "contribution": 2.4
+          },
+          {
+            "rule": "category:gambling",
+            "field": "video_title",
+            "video": 0,
+            "matched": [
+              "skin gambling"
+            ],
+            "severity": 3,
+            "base_severity": 3,
+            "context_relief": false,
+            "weight": 0.6,
+            "contribution": 1.8
+          },
+          {
+            "rule": "category:gambling",
+            "field": "video_description",
+            "video": 0,
+            "matched": [
+              "stake code"
+            ],
+            "severity": 3,
+            "base_severity": 3,
+            "context_relief": false,
+            "weight": 0.4,
+            "contribution": 1.2
+          },
+          {
+            "rule": "category:gambling",
+            "field": "video_title",
+            "video": 1,
+            "matched": [
+              "aviator predictor"
+            ],
+            "severity": 3,
+            "base_severity": 3,
+            "context_relief": false,
+            "weight": 0.6,
+            "contribution": 1.8
+          },
+          {
+            "rule": "hard:youtube_topic_restricted",
+            "detail": "YouTube assigned topic category: Gambling",
+            "severity": 3,
+            "contribution": 3,
+            "source": "channels.topicDetails.topicCategories"
+          },
+          {
+            "rule": "pattern:flagged_ratio",
+            "detail": "100% of recent uploads matched a category",
+            "contribution": 3
+          }
+        ]
+      }
+    },
+    {
+      "platform": "twitch",
+      "platform_creator_id": "FIX_twitch_mature",
+      "username": "fixture_mature",
+      "display_name": "fixture_mature",
+      "profile_url": "",
+      "avatar_url": "",
+      "followers": 2100000,
+      "following": 0,
+      "total_views": 9000000,
+      "total_content": 20,
+      "average_views": 390000,
+      "median_views": 390000,
+      "average_likes": 0,
+      "average_comments": 0,
+      "average_shares": 0,
+      "median_likes": 0,
+      "median_comments": 0,
+      "median_shares": 0,
+      "engagement_rate": 0,
+      "views_per_follower": 0.19,
+      "uploads_last_30_days": 2,
+      "country": "",
+      "language": "",
+      "niche": "gaming",
+      "verified": false,
+      "tier": "Mega",
+      "data_source": "demo",
+      "data_confidence": 0.68,
+      "unavailable": [],
+      "sample_size": 2,
+      "last_updated": "2026-08-15T11:11:15.954Z",
+      "demo": true,
+      "title": "fixture_mature",
+      "description": "just chatting and games",
+      "topics": [],
+      "safety": {
+        "verdict": "block",
+        "safety_score": 0,
+        "quality_flags": [],
+        "risk_score": 10,
+        "categories": [],
+        "flagged_upload_ratio": 0,
+        "rules_version": "1.0.0",
+        "reasons": [
+          {
+            "rule": "hard:twitch_mature",
+            "detail": "the channel declares itself mature on Twitch",
+            "severity": 5,
+            "contribution": 5,
+            "source": "streams.is_mature / channel.content_classification_labels"
+          },
+          {
+            "rule": "hard:twitch_ccl_restricted",
+            "detail": "Twitch content classification labels: SexualThemes",
+            "severity": 5,
+            "contribution": 5,
+            "source": "channel.content_classification_labels"
+          }
+        ]
+      }
+    },
+    {
+      "platform": "youtube",
+      "platform_creator_id": "FIX_age_restricted",
+      "username": "@fixture-restricted",
+      "display_name": "Fixture Restricted",
+      "profile_url": "",
+      "avatar_url": "",
+      "followers": 50000,
+      "following": 0,
+      "total_views": 3000000,
+      "total_content": 60,
+      "average_views": 39750,
+      "median_views": 39500,
+      "average_likes": 840,
+      "average_comments": 61,
+      "average_shares": 0,
+      "median_likes": 830,
+      "median_comments": 59,
+      "median_shares": 0,
+      "engagement_rate": 2.25,
+      "views_per_follower": 0.79,
+      "uploads_last_30_days": 4,
+      "country": "",
+      "language": "",
+      "niche": "film",
+      "verified": false,
+      "tier": "Macro",
+      "data_source": "demo",
+      "data_confidence": 0.78,
+      "unavailable": [],
+      "sample_size": 4,
+      "last_updated": "2026-08-15T11:11:15.955Z",
+      "demo": true,
+      "title": "Fixture Restricted",
+      "description": "Short films.",
+      "topics": [],
+      "safety": {
+        "verdict": "block",
+        "safety_score": 52,
+        "quality_flags": [],
+        "risk_score": 4,
+        "categories": [],
+        "flagged_upload_ratio": 0,
+        "rules_version": "1.0.0",
+        "reasons": [
+          {
+            "rule": "hard:youtube_age_restricted",
+            "detail": "2 of 4 recent uploads are age-restricted by YouTube",
+            "severity": 4,
+            "contribution": 4,
+            "source": "videos.contentDetails.contentRating.ytRating == ytAgeRestricted"
+          }
+        ]
+      }
+    }
+  ]
+}

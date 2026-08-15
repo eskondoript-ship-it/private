@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "updated": "2026-08-15",
+
+  "_why_this_file_exists": [
+    "There is no such thing as a list of every channel. No platform sells one",
+    "and none of them expose an enumeration endpoint: YouTube and Twitch answer",
+    "questions about an id you already have, TikTok and Instagram answer only",
+    "about the account that connected. The only way to get a complete list is to",
+    "scrape, which this project does not do.",
+    "",
+    "So the database is seeded and then enriched. This file is the seed: the",
+    "channels worth having, chosen by a person. build.js resolves each one",
+    "through the official API, measures it, runs it past the safety rules and",
+    "writes the result. Adding a channel means adding a line here.",
+    "",
+    "Entries are handles, not ids. A handle is what you can read off a channel",
+    "page and verify; a UC id copied from memory is a channel nobody can check.",
+    "The API resolves handle -> id at build time, and anything that fails to",
+    "resolve is written to unresolved.json instead of being quietly dropped."
+  ],
+
+  "niches": [
+    "creator-education", "video-editing", "tech", "software", "science",
+    "education", "engineering", "gaming", "music", "film", "design",
+    "cooking", "fitness", "news"
+  ],
+
+  "channels": [
+    { "platform": "youtube", "handle": "@mkbhd", "niche": "tech" },
+    { "platform": "youtube", "handle": "@LinusTechTips", "niche": "tech" },
+    { "platform": "youtube", "handle": "@Mrwhosetheboss", "niche": "tech" },
+    { "platform": "youtube", "handle": "@DaveLee", "niche": "tech" },
+    { "platform": "youtube", "handle": "@TechnologyConnections", "niche": "tech" },
+    { "platform": "youtube", "handle": "@NetworkChuck", "niche": "tech" },
+
+    { "platform": "youtube", "handle": "@veritasium", "niche": "science" },
+    { "platform": "youtube", "handle": "@kurzgesagt", "niche": "science" },
+    { "platform": "youtube", "handle": "@Vsauce", "niche": "science" },
+    { "platform": "youtube", "handle": "@SciShow", "niche": "science" },
+    { "platform": "youtube", "handle": "@minutephysics", "niche": "science" },
+    { "platform": "youtube", "handle": "@pbsspacetime", "niche": "science" },
+    { "platform": "youtube", "handle": "@SmarterEveryDay", "niche": "science" },
+    { "platform": "youtube", "handle": "@stevemould", "niche": "science" },
+    { "platform": "youtube", "handle": "@NASA", "niche": "science" },
+
+    { "platform": "youtube", "handle": "@3blue1brown", "niche": "education" },
+    { "platform": "youtube", "handle": "@numberphile", "niche": "education" },
+    { "platform": "youtube", "handle": "@Computerphile", "niche": "education" },
+    { "platform": "youtube", "handle": "@crashcourse", "niche": "education" },
+    { "platform": "youtube", "handle": "@khanacademy", "niche": "education" },
+    { "platform": "youtube", "handle": "@TED", "niche": "education" },
+    { "platform": "youtube", "handle": "@CGPGrey", "niche": "education" },
+    { "platform": "youtube", "handle": "@TomScottGo", "niche": "education" },
+    { "platform": "youtube", "handle": "@answerinprogress", "niche": "education" },
+
+    { "platform": "youtube", "handle": "@RealEngineering", "niche": "engineering" },
+    { "platform": "youtube", "handle": "@Wendoverproductions", "niche": "engineering" },
+    { "platform": "youtube", "handle": "@markrober", "niche": "engineering" },
+    { "platform": "youtube", "handle": "@tested", "niche": "engineering" },
+    { "platform": "youtube", "handle": "@PracticalEngineeringChannel", "niche": "engineering" },
+
+    { "platform": "youtube", "handle": "@Fireship", "niche": "software" },
+    { "platform": "youtube", "handle": "@TheCodingTrain", "niche": "software" },
+    { "platform": "youtube", "handle": "@freecodecamp", "niche": "software" },
+    { "platform": "youtube", "handle": "@ThePrimeagen", "niche": "software" },
+    { "platform": "youtube", "handle": "@t3dotgg", "niche": "software" },
+    { "platform": "youtube", "handle": "@GoogleDevelopers", "niche": "software" },
+
+    { "platform": "youtube", "handle": "@PeterMcKinnon", "niche": "film" },
+    { "platform": "youtube", "handle": "@DanielSchiffer", "niche": "film" },
+    { "platform": "youtube", "handle": "@JustinOdisho", "niche": "video-editing" },
+    { "platform": "youtube", "handle": "@PremiereGal", "niche": "video-editing" },
+    { "platform": "youtube", "handle": "@filmriot", "niche": "film" },
+    { "platform": "youtube", "handle": "@CorridorCrew", "niche": "film" },
+    { "platform": "youtube", "handle": "@MattWhoisMatt", "niche": "video-editing" },
+    { "platform": "youtube", "handle": "@BlenderOfficial", "niche": "design" },
+    { "platform": "youtube", "handle": "@Figma", "niche": "design" },
+    { "platform": "youtube", "handle": "@TheFutur", "niche": "design" },
+
+    { "platform": "youtube", "handle": "@aliabdaal", "niche": "creator-education" },
+    { "platform": "youtube", "handle": "@colinandsamir", "niche": "creator-education" },
+    { "platform": "youtube", "handle": "@ThinkMediaTV", "niche": "creator-education" },
+    { "platform": "youtube", "handle": "@mattdavella", "niche": "creator-education" },
+    { "platform": "youtube", "handle": "@NathanielDrew", "niche": "creator-education" },
+    { "platform": "youtube", "handle": "@YouTubeCreators", "niche": "creator-education" },
+
+    { "platform": "youtube", "handle": "@MrBeast", "niche": "gaming" },
+    { "platform": "youtube", "handle": "@DudePerfect", "niche": "gaming" },
+    { "platform": "youtube", "handle": "@jacksepticeye", "niche": "gaming" },
+    { "platform": "youtube", "handle": "@Markiplier", "niche": "gaming" },
+    { "platform": "youtube", "handle": "@Ninja", "niche": "gaming" },
+    { "platform": "youtube", "handle": "@Mrfreshasian", "niche": "gaming" },
+
+    { "platform": "youtube", "handle": "@LofiGirl", "niche": "music" },
+    { "platform": "youtube", "handle": "@NoCopyrightSounds", "niche": "music" },
+    { "platform": "youtube", "handle": "@RickBeato", "niche": "music" },
+    { "platform": "youtube", "handle": "@AdamNeely", "niche": "music" },
+
+    { "platform": "youtube", "handle": "@babishculinaryuniverse", "niche": "cooking" },
+    { "platform": "youtube", "handle": "@JoshuaWeissman", "niche": "cooking" },
+    { "platform": "youtube", "handle": "@ethanchlebowski", "niche": "cooking" },
+
+    { "platform": "youtube", "handle": "@JeffNippard", "niche": "fitness" },
+    { "platform": "youtube", "handle": "@HybridCalisthenics", "niche": "fitness" },
+
+    { "platform": "youtube", "handle": "@Vox", "niche": "news" },
+    { "platform": "youtube", "handle": "@AssociatedPress", "niche": "news" },
+    { "platform": "youtube", "handle": "@BBCNews", "niche": "news" },
+
+    { "platform": "twitch", "login": "riotgames", "niche": "gaming" },
+    { "platform": "twitch", "login": "esl_csgo", "niche": "gaming" },
+    { "platform": "twitch", "login": "shroud", "niche": "gaming" },
+    { "platform": "twitch", "login": "pokimane", "niche": "gaming" },
+    { "platform": "twitch", "login": "summit1g", "niche": "gaming" },
+    { "platform": "twitch", "login": "timthetatman", "niche": "gaming" },
+    { "platform": "twitch", "login": "lirik", "niche": "gaming" },
+    { "platform": "twitch", "login": "ibai", "niche": "gaming" },
+    { "platform": "twitch", "login": "auronplay", "niche": "gaming" },
+    { "platform": "twitch", "login": "rubius", "niche": "gaming" },
+    { "platform": "twitch", "login": "gaules", "niche": "gaming" },
+    { "platform": "twitch", "login": "loud_coringa", "niche": "gaming" },
+    { "platform": "twitch", "login": "nasa", "niche": "science" },
+    { "platform": "twitch", "login": "adobe", "niche": "design" },
+    { "platform": "twitch", "login": "blender", "niche": "design" }
+  ],
+
+  "_note_on_the_twitch_entries": [
+    "Several of these are large channels that flag themselves mature. They are",
+    "in the seed on purpose: the point of the filter is that it removes them",
+    "without anyone having to know in advance which ones they were, and a seed",
+    "list where nothing is ever rejected proves nothing."
+  ]
+}

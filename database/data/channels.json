@@ -1,0 +1,355 @@
+{
+  "built_at": "2026-08-15T11:11:15.975Z",
+  "rules_version": "1.0.0",
+  "count": 5,
+  "channels": [
+    {
+      "platform": "youtube",
+      "platform_creator_id": "FIX_history",
+      "username": "@fixture-history",
+      "display_name": "Fixture History",
+      "profile_url": "",
+      "avatar_url": "",
+      "followers": 610000,
+      "following": 0,
+      "total_views": 54000000,
+      "total_content": 180,
+      "average_views": 290000,
+      "median_views": 290000,
+      "average_likes": 19500,
+      "average_comments": 2250,
+      "average_shares": 0,
+      "median_likes": 19500,
+      "median_comments": 2250,
+      "median_shares": 0,
+      "engagement_rate": 7.5,
+      "views_per_follower": 0.48,
+      "uploads_last_30_days": 1,
+      "country": "",
+      "language": "",
+      "niche": "education",
+      "verified": false,
+      "tier": "Mega",
+      "data_source": "demo",
+      "data_confidence": 0.68,
+      "unavailable": [],
+      "sample_size": 2,
+      "last_updated": "2026-08-15T11:11:15.944Z",
+      "demo": true,
+      "title": "Fixture History",
+      "description": "A documentary history channel. Long-form analysis of the twentieth century, sourced and cited.",
+      "topics": [
+        "https://en.wikipedia.org/wiki/Knowledge",
+        "https://en.wikipedia.org/wiki/Society"
+      ],
+      "safety": {
+        "verdict": "allow",
+        "safety_score": 100,
+        "quality_flags": [],
+        "risk_score": 0,
+        "categories": [],
+        "flagged_upload_ratio": 0,
+        "rules_version": "1.0.0",
+        "reasons": [
+          {
+            "rule": "category:hate",
+            "field": "video_title",
+            "video": 0,
+            "matched": [
+              "holocaust denial"
+            ],
+            "exempted_by": [
+              "debunked"
+            ],
+            "severity": 0,
+            "contribution": 0,
+            "detail": "matched but exempted in the same field"
+          }
+        ]
+      }
+    },
+    {
+      "platform": "youtube",
+      "platform_creator_id": "FIX_clean_education",
+      "username": "@fixture-maths",
+      "display_name": "Fixture Maths",
+      "profile_url": "",
+      "avatar_url": "",
+      "followers": 840000,
+      "following": 0,
+      "total_views": 91000000,
+      "total_content": 310,
+      "average_views": 223333,
+      "median_views": 220000,
+      "average_likes": 13667,
+      "average_comments": 900,
+      "average_shares": 0,
+      "median_likes": 14000,
+      "median_comments": 900,
+      "median_shares": 0,
+      "engagement_rate": 6.77,
+      "views_per_follower": 0.26,
+      "uploads_last_30_days": 2,
+      "country": "GB",
+      "language": "",
+      "niche": "education",
+      "verified": false,
+      "tier": "Mega",
+      "data_source": "demo",
+      "data_confidence": 0.83,
+      "unavailable": [],
+      "sample_size": 3,
+      "last_updated": "2026-08-15T11:11:15.760Z",
+      "demo": true,
+      "title": "Fixture Maths",
+      "description": "Visual explanations of linear algebra and probability for secondary school students.",
+      "topics": [
+        "https://en.wikipedia.org/wiki/Knowledge"
+      ],
+      "safety": {
+        "verdict": "allow",
+        "safety_score": 100,
+        "quality_flags": [],
+        "risk_score": 0,
+        "categories": [],
+        "flagged_upload_ratio": 0,
+        "rules_version": "1.0.0",
+        "reasons": []
+      }
+    },
+    {
+      "platform": "youtube",
+      "platform_creator_id": "FIX_scam_awareness",
+      "username": "@fixture-warnings",
+      "display_name": "Fixture Warnings",
+      "profile_url": "",
+      "avatar_url": "",
+      "followers": 120000,
+      "following": 0,
+      "total_views": 8000000,
+      "total_content": 90,
+      "average_views": 57500,
+      "median_views": 57500,
+      "average_likes": 3900,
+      "average_comments": 460,
+      "average_shares": 0,
+      "median_likes": 3900,
+      "median_comments": 460,
+      "median_shares": 0,
+      "engagement_rate": 7.58,
+      "views_per_follower": 0.48,
+      "uploads_last_30_days": 2,
+      "country": "",
+      "language": "",
+      "niche": "creator-education",
+      "verified": false,
+      "tier": "Macro",
+      "data_source": "demo",
+      "data_confidence": 0.68,
+      "unavailable": [],
+      "sample_size": 2,
+      "last_updated": "2026-08-15T11:11:15.916Z",
+      "demo": true,
+      "title": "Fixture Warnings",
+      "description": "We expose scams aimed at younger players and explain how to avoid them.",
+      "topics": [
+        "https://en.wikipedia.org/wiki/Knowledge"
+      ],
+      "safety": {
+        "verdict": "allow",
+        "safety_score": 100,
+        "quality_flags": [],
+        "risk_score": 0,
+        "categories": [],
+        "flagged_upload_ratio": 0,
+        "rules_version": "1.0.0",
+        "reasons": [
+          {
+            "rule": "category:scams",
+            "field": "video_title",
+            "video": 0,
+            "matched": [
+              "free robux"
+            ],
+            "exempted_by": [
+              "scam",
+              "do not fall for"
+            ],
+            "severity": 0,
+            "contribution": 0,
+            "detail": "matched but exempted in the same field"
+          },
+          {
+            "rule": "category:scams",
+            "field": "video_title",
+            "video": 1,
+            "matched": [
+              "free v bucks",
+              "v bucks generator"
+            ],
+            "exempted_by": [
+              "exposed"
+            ],
+            "severity": 0,
+            "contribution": 0,
+            "detail": "matched but exempted in the same field"
+          }
+        ]
+      }
+    },
+    {
+      "platform": "youtube",
+      "platform_creator_id": "FIX_mental_health",
+      "username": "@fixture-support",
+      "display_name": "Fixture Support",
+      "profile_url": "",
+      "avatar_url": "",
+      "followers": 210000,
+      "following": 0,
+      "total_views": 12000000,
+      "total_content": 140,
+      "average_views": 46000,
+      "median_views": 46000,
+      "average_likes": 3050,
+      "average_comments": 620,
+      "average_shares": 0,
+      "median_likes": 3050,
+      "median_comments": 620,
+      "median_shares": 0,
+      "engagement_rate": 7.98,
+      "views_per_follower": 0.22,
+      "uploads_last_30_days": 2,
+      "country": "",
+      "language": "",
+      "niche": "education",
+      "verified": false,
+      "tier": "Macro",
+      "data_source": "demo",
+      "data_confidence": 0.68,
+      "unavailable": [],
+      "sample_size": 2,
+      "last_updated": "2026-08-15T11:11:15.973Z",
+      "demo": true,
+      "title": "Fixture Support",
+      "description": "Mental health support for teenagers, made with clinical psychologists.",
+      "topics": [
+        "https://en.wikipedia.org/wiki/Health"
+      ],
+      "safety": {
+        "verdict": "allow",
+        "safety_score": 100,
+        "quality_flags": [],
+        "risk_score": 0,
+        "categories": [],
+        "flagged_upload_ratio": 0,
+        "rules_version": "1.0.0",
+        "reasons": [
+          {
+            "rule": "category:self_harm",
+            "field": "video_description",
+            "video": 1,
+            "matched": [
+              "pro ana"
+            ],
+            "exempted_by": [
+              "get help"
+            ],
+            "severity": 0,
+            "contribution": 0,
+            "detail": "matched but exempted in the same field"
+          }
+        ]
+      }
+    },
+    {
+      "platform": "youtube",
+      "platform_creator_id": "FIX_bait",
+      "username": "@fixture-bait",
+      "display_name": "Fixture Bait",
+      "profile_url": "",
+      "avatar_url": "",
+      "followers": 15000,
+      "following": 0,
+      "total_views": 900000,
+      "total_content": 400,
+      "average_views": 2100,
+      "median_views": 2100,
+      "average_likes": 43,
+      "average_comments": 6,
+      "average_shares": 0,
+      "median_likes": 43,
+      "median_comments": 6,
+      "median_shares": 0,
+      "engagement_rate": 2.33,
+      "views_per_follower": 0.14,
+      "uploads_last_30_days": 2,
+      "country": "",
+      "language": "",
+      "niche": "gaming",
+      "verified": false,
+      "tier": "Micro",
+      "data_source": "demo",
+      "data_confidence": 0.68,
+      "unavailable": [],
+      "sample_size": 2,
+      "last_updated": "2026-08-15T11:11:15.975Z",
+      "demo": true,
+      "title": "Fixture Bait",
+      "description": "sub4sub always! like and subscribe to win",
+      "topics": [],
+      "safety": {
+        "verdict": "allow",
+        "safety_score": 100,
+        "quality_flags": [
+          "engagement_bait"
+        ],
+        "risk_score": 0,
+        "categories": [],
+        "flagged_upload_ratio": 0,
+        "rules_version": "1.0.0",
+        "reasons": [
+          {
+            "rule": "quality:engagement_bait",
+            "field": "channel_description",
+            "video": null,
+            "matched": [
+              "sub4sub",
+              "like and subscribe to win"
+            ],
+            "severity": 2,
+            "base_severity": 2,
+            "context_relief": false,
+            "weight": 1,
+            "contribution": 2
+          },
+          {
+            "rule": "quality:engagement_bait",
+            "field": "channel_keywords",
+            "video": null,
+            "matched": [
+              "viral fyp trending foryou"
+            ],
+            "severity": 2,
+            "base_severity": 2,
+            "context_relief": false,
+            "weight": 0.8,
+            "contribution": 1.6
+          },
+          {
+            "rule": "quality:engagement_bait",
+            "field": "video_title",
+            "video": 0,
+            "matched": [
+              "watch till the end you wont believe"
+            ],
+            "severity": 2,
+            "base_severity": 2,
+            "context_relief": false,
+            "weight": 0.6,
+            "contribution": 1.2
+          }
+        ]
+      }
+    }
+  ]
+}

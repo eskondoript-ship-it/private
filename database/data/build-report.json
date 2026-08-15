@@ -1,0 +1,25 @@
+{
+  "built_at": "2026-08-15T11:11:15.975Z",
+  "rules_version": "1.0.0",
+  "seed_version": 1,
+  "offline": true,
+  "seeded": 84,
+  "in_database": 5,
+  "needs_review": 1,
+  "rejected": 4,
+  "unresolved": 0,
+  "skipped": 0,
+  "youtube_quota_units": 0,
+  "rejected_by_category": {
+    "scams": 1,
+    "gambling": 1,
+    "hard:youtube_topic_restricted": 1,
+    "hard:twitch_mature": 1,
+    "hard:twitch_ccl_restricted": 1,
+    "hard:youtube_age_restricted": 1
+  },
+  "review_by_category": {
+    "dangerous_stunts": 1
+  },
+  "took_ms": 472
+}

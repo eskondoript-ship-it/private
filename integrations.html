@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<script>/* Theme before first paint. nova.js runs at the end of <body>, so a theme
+   applied there lands after the page has already been painted dark — a white
+   flash on every navigation for anyone using light mode. Six lines here cost
+   nothing and remove it. Kept in sync with ncApplyTheme() in nova.js. */
+(function(){try{var p=localStorage.getItem('nc_theme')||'system';
+var t=(p==='light'||p==='dark')?p:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+var r=document.documentElement;r.setAttribute('data-theme',t);r.setAttribute('data-theme-pref',p);
+r.style.colorScheme=t;}catch(e){}})();</script>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Integrations — NovaClip</title>
+<meta name='description' content='Connect YouTube, Twitch, TikTok and Instagram. Keys stay on the server.'>
+<link rel='icon' href='logo.svg' type='image/svg+xml'>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:var(--nc-bg,#05070E); --panel:var(--nc-bg2,#0C1220);
+  --line:var(--nc-line,rgba(255,255,255,.10)); --txt:var(--nc-text,#EAF2FF);
+  --dim:var(--nc-dim,#7E8AA6); --cyan:var(--nc-cyan,#00F0FF);
+  --violet:var(--nc-violet,#7C5CFF); --pink:var(--nc-pink,#FF2E97);
+  --ok:#3DD68C; --warn:#FFB443; --err:#FF5C7A;
+  --grad:linear-gradient(110deg,var(--violet),var(--cyan) 48%,var(--pink));
+}
+body{background:var(--ink);color:var(--txt);min-height:100vh;
+  font-family:'Geist','Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--cyan)}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:8px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86em;
+  background:rgba(255,255,255,.06);padding:1px 6px;border-radius:6px}
+
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--nc-rail,200px);z-index:998;
+  background:rgba(12,12,16,.85);backdrop-filter:blur(20px);display:flex;flex-direction:column;
+  padding:20px 0;gap:4px;border-right:1px solid var(--line);overflow-y:auto}
+.sidebar .themewrap{margin-top:auto;padding:16px 20px}
+.wrap{width:min(960px,100% - 34px);margin:0 auto;padding:30px 0 80px}
+
+h1{font-size:clamp(1.6rem,3.4vw,2.2rem);font-weight:700;letter-spacing:-.03em}
+.lede{color:var(--dim);margin-top:10px;max-width:62ch}
+h2{font-size:1.05rem;font-weight:680;letter-spacing:-.02em;margin:30px 0 4px}
+.sub{color:var(--dim);font-size:.86rem;margin-bottom:14px}
+
+.rows{display:grid;gap:11px}
+.row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:14px;align-items:center;
+  padding:15px 17px;border-radius:16px;border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012))}
+.row .ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:1.1rem;
+  background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.row .nm{font-weight:660;font-size:.98rem}
+.row .st{font-size:.82rem;color:var(--dim);margin-top:2px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--err);flex:0 0 auto}
+.dot.on{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.dot.warn{background:var(--warn)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{padding:8px 15px;border-radius:10px;border:1px solid var(--line);cursor:pointer;
+  background:rgba(255,255,255,.05);color:var(--txt);font:inherit;font-size:.83rem;font-weight:640;
+  text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:rgba(0,240,255,.5)}
+.btn.primary{background:var(--grad);color:#05070E;border:0}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.miss{font-size:.76rem;color:var(--warn)}
+.miss code{background:rgba(255,180,67,.14)}
+
+.note{color:var(--dim);font-size:.83rem;line-height:1.75;margin-top:24px;padding:16px 18px;
+  border-radius:14px;background:rgba(255,255,255,.025);border:1px solid var(--line)}
+.note b{color:var(--txt)}
+.note ul{margin:8px 0 0 18px}
+.note li{margin:4px 0}
+
+.setup{margin-top:12px;padding:14px 16px;border-radius:12px;border:1px dashed var(--line);
+  background:rgba(255,255,255,.02)}
+.setup label{display:block;font-size:.78rem;color:var(--dim);margin-bottom:6px}
+.setup input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(0,0,0,.3);color:var(--txt);font:inherit;font-size:.88rem}
+.res{margin-top:9px;font-size:.82rem;padding:9px 12px;border-radius:10px;display:none;white-space:pre-wrap;
+  word-break:break-word}
+.res.ok{display:block;background:rgba(61,214,140,.1);border:1px solid rgba(61,214,140,.35);color:var(--ok)}
+.res.bad{display:block;background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.35);color:var(--err)}
+.res.wait{display:block;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--dim)}
+@media (max-width:620px){
+  .row{grid-template-columns:38px minmax(0,1fr);gap:11px;padding:13px 14px}
+  .row .ic{width:38px;height:38px}
+  .acts{grid-column:1/-1;justify-content:flex-start}
+}
+@media (max-width:760px){ body{padding-bottom:74px} }
+</style>
+</head>
+<body>
+<div class='sidebar'>
+  <div class='themewrap'>
+    <label data-t='language'>Language</label>
+    <select id='langpick'></select>
+  </div>
+</div>
+
+<div class='wrap'>
+  <h1>API &amp; Integrations</h1>
+  <p class='lede'>Where NovaClip gets real creator numbers from. Every credential lives on the
+    integrations Worker — nothing is stored in this page, and no key is ever sent to a browser.
+    This screen can only ever see <b>configured</b> or <b>missing</b>.</p>
+
+  <div class='setup'>
+    <label for='base'>Integrations Worker address</label>
+    <input id='base' type='text' placeholder='https://novaclip-integrations.&lt;you&gt;.workers.dev'>
+    <div class='res' id='baseres'></div>
+  </div>
+
+  <h2>Platforms</h2>
+  <p class='sub'>Green means the credentials are present. Test Connection makes a real call.</p>
+  <div class='rows' id='rows'></div>
+
+  <div class='note'>
+    <b>What each one needs, and what it can actually do.</b>
+    <ul>
+      <li><b>YouTube</b> — an API key. No consent screen, no approval. Reads any public channel.</li>
+      <li><b>Twitch</b> — client id and secret. No user consent. Public channel data; the follower
+          <i>count</i> is available, the follower <i>list</i> is not.</li>
+      <li><b>TikTok</b> — user OAuth. Reads only the account that connects. Looking up other
+          creators needs the Research API, which is a separate application.</li>
+      <li><b>Instagram</b> — user OAuth, and the account must be a Creator or Business account
+          linked to a Facebook Page. A personal account cannot return insights.</li>
+    </ul>
+  </div>
+
+  <div class='note'>
+    <b>Nothing here invents numbers.</b> If a platform is not configured, this page says so and
+    offers demo data explicitly. If a configured platform fails, you get the real error — a
+    dashboard that quietly swaps in made-up figures when the API is down is worse than one that
+    admits it is down.
+  </div>
+</div>
+
+<script src='nova.js'></script>
+<script src='biometric.js' defer></script>
+<script>
+/* The page holds no credentials and no state beyond the Worker's address,
+   which is not a secret. Everything else is asked for on demand. */
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var KEY = 'nc_integrations_url';
+
+  var META = {
+    youtube:   { icon: '▶', label: 'YouTube',   oauth: false },
+    twitch:    { icon: '◉', label: 'Twitch',    oauth: false },
+    tiktok:    { icon: '♪', label: 'TikTok',    oauth: true  },
+    instagram: { icon: '◎', label: 'Instagram', oauth: true  },
+    ai:        { icon: '✦', label: 'AI',        oauth: false },
+    database:  { icon: '▤', label: 'Database',  oauth: false },
+    encryption:{ icon: '🔒', label: 'Token encryption', oauth: false }
+  };
+
+  function base() {
+    var v = ($('base').value || '').trim().replace(/\/$/, '');
+    /* https everywhere, with one exception: a Worker running under
+       `wrangler dev` is on http://localhost. Allowing plain http generally
+       would mean a page served over https could be pointed at an attacker's
+       http endpoint, so the exception is limited to loopback. */
+    if (/^https:\/\//.test(v)) return v;
+    if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(v)) return v;
+    return '';
+  }
+
+  function say(el, cls, msg) { el.className = 'res ' + cls; el.textContent = msg; }
+
+  function row(key, info) {
+    var m = META[key] || { icon: '•', label: key };
+    var on = !!info.configured;
+    var acts = '';
+    if (on && (key === 'youtube' || key === 'twitch' || key === 'ai')) {
+      acts = '<button class="btn" data-test="' + key + '">Test Connection</button>';
+    } else if (m.oauth) {
+      acts = on
+        ? '<a class="btn primary" data-connect="' + key + '" href="#">Connect ' + m.label + '</a>' +
+          '<button class="btn" data-disconnect="' + key + '">Disconnect</button>'
+        : '<button class="btn" disabled>Needs credentials</button>';
+    }
+    var missing = (!on && info.missing && info.missing.length)
+      ? '<span class="miss">missing ' + info.missing.map(function (v) { return '<code>' + v + '</code>'; }).join(' ') + '</span>'
+      : '';
+    return '<div class="row">' +
+      '<span class="ic">' + m.icon + '</span>' +
+      '<span style="min-width:0">' +
+        '<span class="nm">' + m.label + '</span>' +
+        '<span class="st"><span class="dot' + (on ? ' on' : '') + '"></span>' +
+          (on ? 'Configured' : 'Not configured') + missing + '</span>' +
+        '<span class="res" id="res_' + key + '"></span>' +
+      '</span>' +
+      '<span class="acts">' + acts + '</span>' +
+    '</div>';
+  }
+
+  async function load() {
+    var b = base();
+    var box = $('baseres');
+    if (!b) {
+      say(box, 'wait', 'Paste the Worker address above to read its status. Until then this page has nothing to ask.');
+      $('rows').innerHTML = Object.keys(META).map(function (k) {
+        return row(k, { configured: false });
+      }).join('');
+      return;
+    }
+    try { localStorage.setItem(KEY, b); } catch (e) {}
+    say(box, 'wait', 'Checking ' + b + ' …');
+
+    try {
+      var r = await fetch(b + '/api/integrations/status', { headers: { Accept: 'application/json' } });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var data = await r.json();
+      say(box, 'ok', 'Reachable. This is the integrations Worker.');
+      $('rows').innerHTML = Object.keys(META)
+        .filter(function (k) { return data[k]; })
+        .map(function (k) { return row(k, data[k]); }).join('');
+      wire();
+    } catch (e) {
+      say(box, 'bad', 'Could not reach that address: ' + e.message +
+        '\nCheck it is the integrations Worker and that /api/integrations/status answers.');
+      $('rows').innerHTML = Object.keys(META).map(function (k) {
+        return row(k, { configured: false });
+      }).join('');
+    }
+  }
+
+  function wire() {
+    document.querySelectorAll('[data-test]').forEach(function (b) {
+      b.onclick = async function () {
+        var k = b.dataset.test, out = $('res_' + k);
+        b.disabled = true;
+        say(out, 'wait', 'Calling the platform…');
+        try {
+          var r = await fetch(base() + '/api/integrations/test?platform=' + k);
+          var d = await r.json();
+          if (d.available) say(out, 'ok', 'Connected.' + (d.note ? ' ' + d.note : ''));
+          else say(out, 'bad', d.error || d.reason || 'Not available.');
+        } catch (e) {
+          say(out, 'bad', 'The request failed: ' + e.message);
+        }
+        b.disabled = false;
+      };
+    });
+
+    document.querySelectorAll('[data-connect]').forEach(function (a) {
+      a.onclick = function (e) {
+        e.preventDefault();
+        /* OAuth has to happen on the Worker's origin — the secret lives there
+           and the redirect URI is registered against it. */
+        location.href = base() + '/auth/' + a.dataset.connect + '?user=me';
+      };
+    });
+
+    document.querySelectorAll('[data-disconnect]').forEach(function (b) {
+      b.onclick = async function () {
+        var k = b.dataset.disconnect, out = $('res_' + k);
+        say(out, 'wait', 'Disconnecting…');
+        try {
+          var r = await fetch(base() + '/api/integrations/' + k + '/disconnect', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user: 'me' })
+          });
+          var d = await r.json();
+          say(out, d.ok ? 'ok' : 'bad', d.ok ? 'Disconnected. The stored token was deleted.' : 'Could not disconnect.');
+        } catch (e) { say(out, 'bad', 'The request failed: ' + e.message); }
+      };
+    });
+  }
+
+  try { $('base').value = localStorage.getItem(KEY) || ''; } catch (e) {}
+  $('base').addEventListener('change', load);
+  $('base').addEventListener('blur', load);
+  load();
+})();
+</script>
+</body>
+</html>

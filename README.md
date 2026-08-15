@@ -1,0 +1,324 @@
+# NovaClip — Creator Intelligence
+
+Two things:
+
+1. **Integrations** — real numbers for YouTube, Twitch, TikTok and Instagram
+   through each platform's official API.
+2. **A channel database** — those numbers collected into one searchable list,
+   with a safety filter that keeps unsuitable channels out and records exactly
+   why each removed one was removed.
+
+No scraping, no undocumented endpoints, and no credential in the repository or
+in a browser.
+
+> ### About "every channel"
+>
+> There is no way to get one, and that is worth saying plainly rather than
+> shipping something that pretends otherwise.
+>
+> No platform exposes an enumeration endpoint. YouTube and Twitch answer
+> questions about an id you already have; TikTok and Instagram answer only about
+> the account that connected. The only route to "every channel" is scraping,
+> which breaks all four sets of terms and gets the key revoked.
+>
+> So the database is **seeded and enriched**: a curated list in
+> `database/seeds/channels.seed.json`, each entry resolved and measured through
+> the official API, filtered, and written out. Adding a channel is one line in
+> that file. It grows deliberately instead of pretending to be complete.
+
+---
+
+## How this project is actually built
+
+There is **no Node server, no bundler and no `package.json`**. NovaClip is
+static HTML plus Cloudflare Workers. That matters for where secrets live:
+
+| | file | needs |
+|---|---|---|
+| Models | `ai-worker.js` | `GEMINI_API_KEY`, optional OpenRouter/OpenAI |
+| Accounts, leaderboard, community | `leaderboard-worker.js` | KV binding `DB` |
+| **Platform integrations** | **`integrations-worker.js`** | **the credentials below + KV binding `DB`** |
+
+The three are **not interchangeable**. Each answers `/health` with a `worker`
+field naming itself, so a swapped deploy is visible in a browser.
+
+A `.env` file has nothing to read it at runtime here. Credentials live in
+Cloudflare's secret store; `.env.example` documents the names and is what
+`wrangler dev` reads locally.
+
+### What is in this repo
+
+```
+integrations-worker.js          the Worker: platform APIs, OAuth, and the database endpoints
+integrations.html               credential status and live connection tests
+database.html                   browse, search and sort the database
+
+database/build.js               the pipeline: resolve -> measure -> filter -> write
+database/SCHEMA.md              the channel record, field by field
+database/safety/rules.json      the entire policy — terms, weights, thresholds, overrides
+database/safety/filter.js       executes the policy; holds no opinions of its own
+database/seeds/channels.seed.json   the curated seed list
+database/seeds/fixtures.json    hand-written cases, also what --offline builds from
+database/data/                  the built output (channels, review, rejected, unresolved, report)
+
+tests/metrics.test.mjs          medians, tiers, engagement, normalisation
+tests/filter.test.mjs           the safety filter, mostly its false positives
+.env.example                    every variable name, no values
+```
+
+---
+
+## 1. Local setup
+
+```bash
+cp .env.example .env          # .env is gitignored — never commit it
+```
+
+Fill in what you have. Every platform is independent: **YouTube alone is
+enough to see real data**, and anything missing degrades to a clear
+"not configured" instead of breaking the app.
+
+Generate the encryption key (required before any OAuth connection is allowed):
+
+```bash
+openssl rand -base64 32       # paste into TOKEN_ENCRYPTION_KEY
+```
+
+## 2. Run it
+
+```bash
+# the static site — any static server will do
+python3 -m http.server 8080
+
+# the integrations Worker
+npx wrangler dev integrations-worker.js --port 8787
+```
+
+Then open:
+
+```
+http://localhost:8080/integrations.html      credentials and connection tests
+http://localhost:8080/database.html          the channel database
+```
+
+Paste `http://localhost:8787` into the address box at the top. The page reads
+`/api/integrations/status` and shows each platform as **Configured** or
+**Missing**. It can never see a key — the endpoint returns booleans and
+variable *names* only.
+
+## 3. Tests
+
+```bash
+node --test tests/*.test.mjs
+```
+
+38 tests. 14 on the metrics, the tiers and the normalisation — the parts where
+a quiet mistake ranks the wrong creator first. 24 on the safety filter, most of
+them on the direction that fails silently: a filter letting something through
+gets noticed, while removing a legitimate channel is invisible, because the
+person it happened to never finds out.
+
+> Note: `node --test tests/` (directory form) fails on this Node version with
+> `Cannot find module`. Use the glob above.
+
+There is no lint or type-check step to run: no toolchain is installed and
+adding one would mean adding a build system this project deliberately does not
+have.
+
+---
+
+## 4. Deploying
+
+```bash
+npx wrangler deploy integrations-worker.js
+npx wrangler secret put YOUTUBE_API_KEY
+npx wrangler secret put TOKEN_ENCRYPTION_KEY
+npx wrangler secret put ADMIN_TOKEN            # publishing and the private lists
+# ...one per credential you use
+```
+
+Bind KV as `DB` (Settings → Bindings → KV namespace, variable name `DB`).
+Set `PUBLIC_URL` to the Worker's public address — the OAuth redirect URIs are
+built from it and must match what you registered:
+
+```
+<PUBLIC_URL>/auth/tiktok/callback
+<PUBLIC_URL>/auth/instagram/callback
+```
+
+Check it with `<PUBLIC_URL>/health`.
+
+---
+
+## 5. What each platform can actually do
+
+This is the part that decides what you can build, so it is stated plainly.
+
+| Platform | Auth | Approval needed | Can read other creators? |
+|---|---|---|---|
+| **YouTube** | API key | none | **Yes** — any public channel |
+| **Twitch** | client credentials | none | **Yes** — any public channel |
+| **TikTok** | user OAuth | app review for production | **No** — only the connected account |
+| **Instagram** | user OAuth | app review + Business verification | **No** — only the connected account |
+
+Specifically:
+
+- **YouTube** — the one that just works. Enable *YouTube Data API v3* on the
+  key. Free quota is 10,000 units/day; a channel + recent videos lookup costs
+  about 3, and results are cached for 5 minutes.
+- **Twitch** — follower **count** is available; the follower **list** needs a
+  user token with moderator scope and is not offered. VODs have no likes or
+  comments, so those come back as 0 and are named in `unavailable`.
+- **TikTok** — Login Kit and Display API. Looking up an arbitrary creator needs
+  the **Research API**, a separate academic application. Not having it is
+  reported, never worked around.
+- **Instagram** — the account must be **Creator or Business, linked to a
+  Facebook Page**. A personal account cannot return insights; the error says
+  exactly that rather than "something went wrong".
+
+---
+
+## 6. Endpoints
+
+```
+GET  /health
+GET  /api/integrations/status
+GET  /api/integrations/test?platform=youtube|twitch|tiktok|instagram|ai
+GET  /api/creator/{youtube|twitch|tiktok|instagram}?id=<id>[&demo=1]
+POST /api/creators                     {"creators":[{"platform":"youtube","id":"UC..."}]}
+GET  /auth/tiktok        /auth/tiktok/callback
+GET  /auth/instagram     /auth/instagram/callback
+POST /api/integrations/{platform}/disconnect
+```
+
+Every creator response is normalised to one shape regardless of platform, with
+`unavailable` naming anything the platform genuinely cannot provide — so a `0`
+is never mistaken for a measurement.
+
+## 7. Why medians
+
+Ranking uses **median**, not mean. One video that caught an algorithm can be
+fifty times a creator's normal, and a mean lets that single post speak for the
+whole channel — which is how a brand ends up paying for reach that will not
+happen again.
+
+Engagement uses medians on **both** sides of the ratio. Mixing mean likes with
+median views reported 177% engagement for a channel whose real figure was
+11.5%; that bug is now covered by a test.
+
+Mean is still reported, because the gap between the two is itself the signal:
+mean far above median means one spike, the two close together means a reliable
+channel.
+
+## 8. Security
+
+- No credential is ever in a response body, a log line, or any page.
+- OAuth tokens are encrypted at rest with **AES-GCM**, key derived from
+  `TOKEN_ENCRYPTION_KEY` with SHA-256, fresh 12-byte IV per record.
+- Without `TOKEN_ENCRYPTION_KEY`, starting OAuth is **refused** rather than
+  storing a bearer token in plain text.
+- The OAuth `state` is HMAC-signed and expires after 10 minutes, so a callback
+  cannot be forged to attach an attacker's account to someone else's record.
+- Disconnecting deletes the token **and** the cached creator record.
+- Rotating `TOKEN_ENCRYPTION_KEY` makes existing connections read as
+  disconnected — reconnect, no data corruption.
+
+## 9. The channel database
+
+```bash
+node database/build.js --offline        # fixtures, no keys, no network
+node database/build.js                  # the real seed list through the real APIs
+node database/build.js --only youtube --limit 10
+node database/build.js --publish https://your-worker.workers.dev
+```
+
+Then open `database.html`. It loads `database/data/channels.json` on arrival and
+the Worker when you give it an address.
+
+### What the build does
+
+For each seeded channel it resolves the handle through the official API, pulls
+the channel and its recent uploads, computes the metrics in `SCHEMA.md`, and
+runs the result past `database/safety/rules.json`. Three outcomes:
+
+| | meaning | where it goes |
+|---|---|---|
+| **allow** | nothing fired, or only signals too weak to mean anything | `channels.json` — the database |
+| **review** | something fired, not enough to remove a channel over | `review.json` — for a person |
+| **block** | removed, with the rule that removed it | `rejected.json` |
+
+`review` is the important one. Term matching cannot tell a documentary about
+cartels from a channel selling drugs, and a filter that pretends it can removes
+journalism and keeps the actual problem. Everything ambiguous goes to a person.
+
+A build spends about **3 YouTube quota units per channel** out of 10,000 a day,
+and the exact figure is printed and written to `build-report.json`.
+
+### The filter
+
+All of the policy is in `database/safety/rules.json` — terms, weights,
+thresholds, exemptions, overrides. `filter.js` executes it and has no opinions
+of its own, so changing what counts as unsuitable is a JSON edit, and every
+rejection traces to a line in that file.
+
+The design decisions worth knowing:
+
+- **Word boundaries, never substrings.** Substring matching is what blocks
+  Scunthorpe, Penistone and every channel with "analysis" in the title. There
+  are tests for exactly this.
+- **A single match can never remove a channel.** The heaviest term in one video
+  title reaches `review` and stops there. Removal needs the term in the
+  channel's own name or description, two independent categories, or a pattern
+  across many uploads.
+- **Context relief.** A history channel says the words a hate filter watches
+  for; a mental health channel says the words a self-harm filter watches for.
+  Categories marked context-sensitive lose severity when the channel is clearly
+  news, education or medical — a discount, never below 1, not an exemption.
+- **Same-field exemptions.** "How the free robux scam works — do not fall for
+  it" is a warning. The match is still recorded, marked exempted, and scored 0.
+- **Quality is not safety.** Engagement bait is flagged on the row and never
+  touches the verdict. The first version of the rules removed a channel purely
+  for saying "sub4sub" a lot, which is how a safety filter quietly becomes a
+  taste filter.
+- **The platform's own signals outrank guesses.** A Twitch channel that flags
+  itself mature, or a YouTube channel with age-restricted uploads as a pattern,
+  is removed on that alone — those are declarations, not inferences.
+- **Slurs are not in this repository.** Putting a slur list in a repo creates a
+  slur list in a repo. Drop one in `database/safety/slurs.local.txt` (gitignored,
+  one per line) and the filter loads it, matches it and redacts it out of the
+  audit trail.
+- **Human overrides win.** `overrides.allow` and `overrides.block` in
+  rules.json beat every score, and appear in the reasons when they do.
+
+### Database endpoints
+
+```
+GET  /api/database?q=&platform=&niche=&tier=&min_followers=&sort=&limit=&offset=
+GET  /api/database/stats
+GET  /api/database/{platform}/{id}
+GET  /api/database/review        Authorization: Bearer ADMIN_TOKEN
+GET  /api/database/rejected      Authorization: Bearer ADMIN_TOKEN
+POST /api/database/publish       Authorization: Bearer ADMIN_TOKEN
+```
+
+`review` and `rejected` are lists of named channels with a reason they were
+removed attached — that is an accusation about real people, so they need the
+token and the browse page has no code path that requests them. The token is
+compared in constant time; an early return on the first wrong byte leaks a
+token one byte at a time.
+
+The Worker classifies nothing at request time. A verdict that can change
+between two reads is not a verdict, and the build produces an audit trail a
+request handler has nowhere to keep.
+
+---
+
+## 10. Demo mode
+
+Demo data is served **only** when asked for by name (`?demo=1`) or when nothing
+is configured at all, and it is labelled `"demo": true` with
+`"data_source": "demo"`.
+
+It is never substituted for a real call that failed. A configured platform that
+errors returns the real error — a dashboard that quietly shows invented numbers
+when the API is down is worse than one that admits it is down.
