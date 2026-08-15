@@ -54,6 +54,7 @@ integrations.html               credential status and live connection tests
 database.html                   browse, search and sort the database
 
 database/build.js               the pipeline: resolve -> measure -> filter -> write
+database/count.js               how many channels match a set of parameters
 database/SCHEMA.md              the channel record, field by field
 database/safety/rules.json      the entire policy — terms, weights, thresholds, overrides
 database/safety/filter.js       executes the policy; holds no opinions of its own
@@ -253,6 +254,26 @@ journalism and keeps the actual problem. Everything ambiguous goes to a person.
 
 A build spends about **3 YouTube quota units per channel** out of 10,000 a day,
 and the exact figure is printed and written to `build-report.json`.
+
+### How many channels match a set of parameters
+
+```bash
+node database/count.js
+node database/count.js --min-followers 10000 --niche gaming
+node database/count.js --tier Micro --min-engagement 3 --include-review
+```
+
+It prints the count, then what each parameter removed on its own — so a filter
+that returns nothing tells you which condition emptied it instead of leaving
+you to bisect the flags.
+
+**The number is a count of your seed list, not of the platform.** There is no
+endpoint on any of the four that counts or lists channels by criteria. YouTube's
+search endpoint returns a `totalResults` that Google documents as an
+approximation of matching *videos*, capped and unreliable — it is not a census
+of channels and this project does not present it as one. The ceiling on any
+count is the seed list, currently 84 entries, and the only way to raise it is to
+add channels to it.
 
 ### The filter
 
