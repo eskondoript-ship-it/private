@@ -11,3 +11,8 @@ node_modules/
 # repository; the filter loads this file when it is present and redacts
 # anything it matches out of the audit trail. See database/safety/rules.json.
 database/safety/slurs.local.txt
+
+# The measurement cache. It is regenerable — at the cost of re-spending quota —
+# and a run over ten thousand channels makes it tens of megabytes that churn on
+# every commit. Keep it on disk, out of git. Deleting it is safe but not free.
+database/data/measured.json

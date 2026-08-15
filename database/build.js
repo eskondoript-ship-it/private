@@ -63,7 +63,33 @@ const OFFLINE = flag('--offline');
 const ONLY = val('--only', '');
 const LIMIT = parseInt(val('--limit', '0'), 10) || 0;
 const PUBLISH = val('--publish', '');
+const REFRESH = flag('--refresh');
+const MAX_AGE = parseInt(val('--max-age', '7'), 10);   // days before a measurement is re-taken
+const FLUSH = 25;
 const env = loadEnv();
+
+/* A follower count from three weeks ago is not a follower count. Anything
+   older than --max-age is measured again rather than served stale. */
+const STALE = hit => (Date.now() - new Date(hit.measured_at).getTime()) > MAX_AGE * 86400000;
+
+const CACHE_FILE = () => path.join(DATA, 'measured.json');
+
+function readCache() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(CACHE_FILE(), 'utf8'));
+    return new Map(Object.entries(raw.channels || {}));
+  } catch (e) { return new Map(); }
+}
+
+function writeCache(cache) {
+  fs.mkdirSync(DATA, { recursive: true });
+  fs.writeFileSync(CACHE_FILE(), JSON.stringify({
+    updated: new Date().toISOString(),
+    note: 'Every measurement taken, keyed by platform:handle. build.js reads this to resume; the other data files are rebuilt from it each run. Safe to delete — it only costs quota to rebuild.',
+    count: cache.size,
+    channels: Object.fromEntries(cache)
+  }, null, 2) + '\n');
+}
 
 let quota = 0;                                   // YouTube units, counted honestly
 const log = (...a) => console.log(...a);
@@ -346,6 +372,8 @@ async function main() {
   const out = { allow: [], review: [], block: [] };
   const unresolved = [];
   const skipped = [];
+  const cache = REFRESH ? new Map() : readCache();
+  if (cache.size) log('  ' + cache.size + ' channels already measured (--refresh to re-measure, --max-age N for days)');
 
   if (OFFLINE) {
     log('offline — fixtures only, nothing will be requested');
@@ -362,9 +390,22 @@ async function main() {
     if (!haveYT) log('YOUTUBE_API_KEY not set — skipping every YouTube entry');
     if (!haveTW) log('TWITCH_CLIENT_ID/SECRET not set — skipping every Twitch entry');
 
-    let n = 0;
+    let n = 0, fresh = 0, reused = 0;
     for (const e of entries) {
       n++;
+
+      /* Resume. Measuring ten thousand channels takes hours, and a run that
+         loses everything to a dropped connection at hour six is a run nobody
+         starts twice. The cache is the source of truth; channels.json and its
+         siblings are projections of it, rewritten from scratch each time. */
+      const ck = e.platform + ':' + (e.handle || e.login || '').toLowerCase();
+      const hit = cache.get(ck);
+      if (hit && !STALE(hit)) {
+        out[hit.safety.verdict].push(hit.record);
+        reused++;
+        continue;
+      }
+
       if (e.platform === 'youtube' && !haveYT) { skipped.push({ ...e, reason: 'YOUTUBE_API_KEY not set' }); continue; }
       if (e.platform === 'twitch' && !haveTW) { skipped.push({ ...e, reason: 'Twitch credentials not set' }); continue; }
       if (e.platform !== 'youtube' && e.platform !== 'twitch') {
@@ -389,11 +430,20 @@ async function main() {
       const safety = classify(got.safetyInput, rules, external);
       safety.rules_version = rules.version;
       safety.reviewed_at = new Date().toISOString();
-      out[safety.verdict].push(merge(got.record, safety, got.safetyInput));
+      const record = merge(got.record, safety, got.safetyInput);
+      out[safety.verdict].push(record);
+
+      cache.set(ck, { measured_at: new Date().toISOString(), safety: { verdict: safety.verdict }, record });
+      fresh++;
+      /* Flushed in batches, so a crash costs at most FLUSH channels rather
+         than the whole run. */
+      if (fresh % FLUSH === 0) { writeCache(cache); process.stdout.write('  [cache flushed at ' + fresh + '] '); }
 
       log(safety.verdict + (safety.verdict === 'allow' ? '' : ' (' + topReason(safety) + ')'));
       await sleep(120);                            // polite, and well under both rate limits
     }
+    writeCache(cache);
+    if (reused) log('  reused ' + reused + ' measurements from the cache, measured ' + fresh + ' fresh');
   }
 
   /* Ranked by median views, for the reason in the README: a mean lets one

@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-08-15T14:46:35.712Z",
+  "built_at": "2026-08-15T14:50:01.071Z",
   "count": 1,
   "channels": [
     {
@@ -33,7 +33,7 @@
       "data_confidence": 0.78,
       "unavailable": [],
       "sample_size": 7,
-      "last_updated": "2026-08-15T14:46:35.702Z",
+      "last_updated": "2026-08-15T14:50:01.062Z",
       "demo": true,
       "title": "Fixture Vlogs",
       "description": "Weekly vlogs about making things.",

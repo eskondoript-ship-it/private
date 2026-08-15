@@ -256,6 +256,25 @@ journalism and keeps the actual problem. Everything ambiguous goes to a person.
 A build spends about **3 YouTube quota units per channel** out of 10,000 a day,
 and the exact figure is printed and written to `build-report.json`.
 
+### Long runs: resume, staleness and cost
+
+A run over thousands of channels takes hours, so every measurement is cached in
+`data/measured.json` and flushed every 25 channels. Re-run the same command and
+it picks up where it stopped, spending no quota on anything it already has.
+
+```bash
+node database/build.js                    # resumes; re-measures anything older than 7 days
+node database/build.js --max-age 1        # treat anything over a day old as stale
+node database/build.js --refresh          # ignore the cache, measure everything again
+```
+
+The cache is the source of truth; `channels.json`, `review.json` and
+`rejected.json` are rebuilt from it on every run. That means **editing
+`rules.json` and re-running re-classifies everything without re-measuring
+anything** — a policy change costs no quota at all.
+
+It is gitignored: regenerable, and tens of megabytes at scale.
+
 ### Finding channels you do not already know about
 
 `build.js` measures channels you name. `discover.js` finds them, using the only
